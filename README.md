@@ -27,10 +27,9 @@ The package will automatically register itself using Laravel's package discovery
 
 ### 2. Publish Configuration and Assets
 
-Publish the configuration file and views:
+Publish the views:
 
 ```bash
-php artisan vendor:publish --tag="laravel-installer-config"
 php artisan vendor:publish --tag="installer-views"
 ```
 
@@ -51,6 +50,7 @@ return [
     'app_name' => env('APP_NAME', 'Laravel Application'),
     'license_check' => true,
     'license_server_url' => 'https://codekernel.net/api/v1/license',
+    'license_storage_path' => 'app/private/key.private',
 ];
 ```
 

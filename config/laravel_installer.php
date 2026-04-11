@@ -34,4 +34,15 @@ return [
     |
     */
     'license_server_url' => 'https://codekernel.net/api/v1/license',
+
+    /*
+    |--------------------------------------------------------------------------
+    | License Storage Path
+    |--------------------------------------------------------------------------
+    |
+    | This value is the relative path within the storage directory where the
+    | license key will be stored.
+    |
+    */
+    'license_storage_path' => 'app/private/key.private',
 ];

@@ -37,18 +37,14 @@ class InstallerServiceProvider extends ServiceProvider
         // Load views
         $this->loadViewsFrom(__DIR__.'/../resources/views', 'installer');
 
-        // Publish views and config
-        $this->publishes([
-            __DIR__.'/../resources/views' => resource_path('views/vendor/installer'),
-        ], 'installer-views');
-
-        $this->publishes([
-            __DIR__.'/../config/laravel_installer.php' => config_path('laravel_installer.php'),
-        ], 'laravel-installer-config');
-
         // Register middleware
         $router = $this->app['router'];
         $router->aliasMiddleware('installer.check', Http\Middleware\CheckInstalled::class);
         $router->aliasMiddleware('installer.redirect', Http\Middleware\RedirectIfInstalled::class);
+
+        // Publish views
+        $this->publishes([
+            __DIR__.'/../resources/views' => resource_path('views/vendor/installer'),
+        ], 'installer-views');
     }
 }

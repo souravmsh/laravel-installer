@@ -3,7 +3,7 @@
 namespace Souravmsh\Installer\Services;
 
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 
 class LicenseService
 {
@@ -31,12 +31,12 @@ class LicenseService
 
             if ($response->successful()) {
                 $data = $response->json();
-                
-                if (isset($data['valid']) && $data['valid'] === true) {
+
+                if (isset($data['status']) && $data['status'] === true) {
                     return [
                         'success' => true,
                         'message' => $data['message'] ?? 'License validated successfully',
-                        'data' => $data
+                        'data' => $data['data'] ?? []
                     ];
                 }
             }
@@ -62,25 +62,21 @@ class LicenseService
     public function storeLicense(string $name, string $email, string $licenseKey, array $validationData = []): bool
     {
         try {
-            DB::table('settings')->updateOrInsert(
-                ['key' => 'license_name'],
-                ['value' => $name, 'updated_at' => now()]
-            );
+            $privateKey = $validationData['private_key'] ?? '';
 
-            DB::table('settings')->updateOrInsert(
-                ['key' => 'license_email'],
-                ['value' => $email, 'updated_at' => now()]
-            );
+            if (empty($privateKey)) {
+                return false;
+            }
 
-            DB::table('settings')->updateOrInsert(
-                ['key' => 'license_key'],
-                ['value' => $licenseKey, 'updated_at' => now()]
-            );
+            $licensePath = config('laravel_installer.license_storage_path', 'app/private/key.private');
+            $directory = storage_path(dirname($licensePath));
+            $filePath = storage_path($licensePath);
 
-            DB::table('settings')->updateOrInsert(
-                ['key' => 'license_validated_at'],
-                ['value' => now()->toDateTimeString(), 'updated_at' => now()]
-            );
+            if (!File::exists($directory)) {
+                File::makeDirectory($directory, 0755, true);
+            }
+
+            File::put($filePath, $privateKey);
 
             return true;
         } catch (\Exception $e) {
