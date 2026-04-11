@@ -1,0 +1,13 @@
+/vendor/
+composer.lock
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php
+.idea/
+.vscode/
+.DS_Store
+.phpunit.result.cache
+/tests/_output
+/tests/_support/_generated
+phpunit.xml
+.env
