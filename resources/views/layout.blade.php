@@ -159,15 +159,14 @@
                 <h3 class="fw-bold mb-1">{{ config('laravel_installer.app_name') }}</h3>
                 <p class="text-muted small">Setup Wizard</p>
             </div>
-            <div class="installer-body">
-                <div class="step-indicator">
-                    <div class="step-dot {{ Route::is('installer.requirements') ? 'active' : (Route::is('installer.database') || Route::is('installer.license') || Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}"></div>
-                    <div class="step-dot {{ Route::is('installer.database') ? 'active' : (Route::is('installer.license') || Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}"></div>
+            <div class="installer-body"><div class="step-indicator">
+                    <div class="step-dot {{ request()->routeIs('installer.requirements') ? 'active' : (request()->routeIs('installer.database') || request()->routeIs('installer.license') || request()->routeIs('installer.install') || request()->routeIs('installer.complete') ? 'completed' : '') }}"></div>
+                    <div class="step-dot {{ request()->routeIs('installer.database') ? 'active' : (request()->routeIs('installer.license') || request()->routeIs('installer.install') || request()->routeIs('installer.complete') ? 'completed' : '') }}"></div>
                     @if(config('laravel_installer.license_check', 'required') !== 'disabled')
-                    <div class="step-dot {{ Route::is('installer.license') ? 'active' : (Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}"></div>
+                        <div class="step-dot {{ request()->routeIs('installer.license') ? 'active' : (request()->routeIs('installer.install') || request()->routeIs('installer.complete') ? 'completed' : '') }}"></div>
                     @endif
-                    <div class="step-dot {{ Route::is('installer.install') ? 'active' : (Route::is('installer.complete') ? 'completed' : '') }}"></div>
-                    <div class="step-dot {{ Route::is('installer.complete') ? 'active' : '' }}"></div>
+                    <div class="step-dot {{ request()->routeIs('installer.install') ? 'active' : (request()->routeIs('installer.complete') ? 'completed' : '') }}"></div>
+                    <div class="step-dot {{ request()->routeIs('installer.complete') ? 'active' : '' }}"></div>
                 </div>
                 @yield('content')
             </div>
