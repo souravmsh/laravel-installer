@@ -228,7 +228,9 @@ class InstallerController extends Controller
             }
 
             // Create install lock file
-            File::put(storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install')), now()->toDateTimeString());
+            $lockFile = storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install'));
+            File::ensureDirectoryExists(dirname($lockFile));
+            File::put($lockFile, now()->toDateTimeString());
 
             // Clear session
             session()->forget(['license_name', 'license_email', 'license_key', 'license_data']);

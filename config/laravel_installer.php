@@ -15,7 +15,7 @@ return [
 
     'installer_enabled' => env('INSTALLER_ENABLED', true),
 
-    'installed_key_path' => env('INSTALLER_KEY_PATH', 'app/private/key.install'),
+    'installed_key_path' => env('INSTALLER_KEY_PATH', 'private/key.install'),
 
     /*
     |--------------------------------------------------------------------------
@@ -53,5 +53,5 @@ return [
     | license key will be stored.
     |
     */
-    'license_storage_path' => env('INSTALLER_LICENSE_KEY_PATH', 'app/private/key.private'),
+    'license_storage_path' => env('INSTALLER_LICENSE_KEY_PATH', 'private/key.private'),
 ];
