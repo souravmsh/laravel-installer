@@ -60,6 +60,9 @@ return [
 
     // Enable or disable the installer
     'installer_enabled' => env('INSTALLER_ENABLED', true),
+
+    // Path to the installation lock file
+    'installed_flag_path' => storage_path('app/private/key.install'),
     
     // Supported: "required", "optional", "disabled"
     'license_check' => 'required',

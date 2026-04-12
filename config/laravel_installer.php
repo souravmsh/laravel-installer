@@ -15,6 +15,8 @@ return [
 
     'installer_enabled' => env('INSTALLER_ENABLED', true),
 
+    'installed_flag_path' => storage_path('app/private/key.install'),
+
     /*
     |--------------------------------------------------------------------------
     | License Check
