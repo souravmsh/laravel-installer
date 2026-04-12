@@ -53,7 +53,7 @@ return [
     | license key will be stored.
     |
     */
-    'license_storage_path' => env('INSTALLER_LICENSE_KEY_PATH', 'private/key.private'),
+    'license_storage_path' => env('INSTALLER_LICENSE_KEY_PATH', 'app/private/key.private'),
 
     /*
     |--------------------------------------------------------------------------
