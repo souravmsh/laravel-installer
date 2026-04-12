@@ -1,60 +1,77 @@
 @extends('installer::layout')
 
-@section('title', 'Welcome')
+@section('title', 'System Requirements')
+@section('subtitle', 'Please ensure your server meets the following requirements.')
 
 @section('content')
 
-<div class="text-center mb-8">
-    <h4 class="text-xl font-bold text-slate-900">System Requirements</h4>
-    <p class="text-slate-500 text-sm">Validating your environment for installation.</p>
-</div>
-
-<div class="space-y-3 mb-8">
-    @foreach($requirements as $key => $requirement)
-    <div class="flex items-center justify-between bg-white/40 border border-white/20 p-4 rounded-2xl hover:bg-white/60 hover:translate-x-1 transition-all duration-300">
-        <div class="flex flex-col">
-            <span class="text-sm font-semibold text-slate-700">{{ $requirement['name'] }}</span>
-            @if(isset($requirement['current']))
-                <span class="text-[10px] text-slate-400 font-bold tracking-wider uppercase -mt-0.5">Current: {{ $requirement['current'] }}</span>
-            @endif
-        </div>
-        <div class="flex items-center">
-            @if($requirement['status'])
-                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm shadow-emerald-100/50">
-                    <i class="bi bi-check-lg"></i>
-                </div>
-            @else
-                <div class="w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600 shadow-sm shadow-rose-100/50">
-                    <i class="bi bi-x-lg"></i>
-                </div>
-            @endif
-        </div>
-    </div>
-    @endforeach
+<div class="border border-slate-200 rounded-md overflow-hidden">
+    <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+            <tr>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Requirement</th>
+                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Version</th>
+                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+            </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-slate-200">
+            @foreach($requirements as $key => $requirement)
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">
+                    {{ $requirement['name'] }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
+                    {{ $requirement['current'] ?? 'N/A' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    @if($requirement['status'])
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            <i class="bi bi-check2 me-1"></i> Passed
+                        </span>
+                    @else
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                            <i class="bi bi-x-lg me-1"></i> Failed
+                        </span>
+                    @endif
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 
 @php
     $allPassed = collect($requirements)->every(fn($req) => $req['status']);
 @endphp
 
-@if($allPassed)
-    <div class="bg-emerald-50/50 border border-emerald-100/50 p-4 rounded-2xl flex items-center gap-3 mb-6 transition-all animate-pulse">
-        <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
-        <p class="text-sm font-medium text-emerald-800">Your system is ready for installation.</p>
+@if(!$allPassed)
+<div class="mt-4 rounded-md bg-red-50 p-4 border border-red-200">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <i class="bi bi-exclamation-triangle-fill text-red-400"></i>
+        </div>
+        <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Cannot Proceed</h3>
+            <div class="mt-2 text-sm text-red-700">
+                <p>Please resolve the failed requirements listed above before continuing with the installation.</p>
+            </div>
+        </div>
     </div>
-    
-    <a href="{{ route('installer.database') }}" class="btn-premium w-full py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-200">
-        Get Started
-        <i class="bi bi-arrow-right leading-none"></i>
-    </a>
-@else
-    <div class="bg-rose-50/50 border border-rose-100/50 p-4 rounded-2xl flex items-center gap-3 mb-6">
-        <div class="w-2 h-2 rounded-full bg-rose-500"></div>
-        <p class="text-sm font-medium text-rose-800">Please resolve the requirements above to continue.</p>
-    </div>
-    <button disabled class="w-full py-4 rounded-2xl bg-slate-100 text-slate-400 font-bold cursor-not-allowed">
-        Check Requirements
-    </button>
+</div>
 @endif
 
+@endsection
+
+@section('footer')
+    <div></div> <!-- Empty div for flex space-between -->
+    
+    @if($allPassed)
+        <a href="{{ route('installer.database') }}" class="btn-primary">
+            Next step <i class="bi bi-chevron-right ml-2 text-xs"></i>
+        </a>
+    @else
+        <button disabled class="btn-primary opacity-50 cursor-not-allowed">
+            Next step <i class="bi bi-chevron-right ml-2 text-xs"></i>
+        </button>
+    @endif
 @endsection

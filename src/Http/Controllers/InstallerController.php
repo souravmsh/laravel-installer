@@ -248,11 +248,20 @@ class InstallerController extends Controller
         return view('installer::complete');
     }
 
-    /**
-     * Check system requirements
-     */
     protected function checkRequirements(): array
     {
+        // Try to create .env from .env.example if it doesn't exist
+        $envPath = base_path('.env');
+        $envExamplePath = base_path('.env.example');
+        
+        if (!File::exists($envPath) && File::exists($envExamplePath)) {
+            try {
+                File::copy($envExamplePath, $envPath);
+            } catch (\Exception $e) {
+                // Ignore, let the status check handle the failure
+            }
+        }
+
         return [
             'php_version' => [
                 'name' => 'PHP Version >= 8.1',
@@ -293,7 +302,9 @@ class InstallerController extends Controller
             ],
             'env_writable' => [
                 'name' => '.env File Writable',
-                'status' => is_writable(base_path('.env')) || is_writable(base_path()),
+                'status' => file_exists(app()->environmentFilePath()) 
+                            ? is_writable(app()->environmentFilePath()) 
+                            : is_writable(dirname(app()->environmentFilePath())),
             ],
         ];
     }

@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Installer') - {{ config('laravel_installer.app_name', 'Laravel') }}</title>
+    <title>@yield('title', 'Installer') - {{ config('laravel_installer.app_name', 'System Setup') }}</title>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
@@ -21,36 +21,15 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif'],
                     },
                     colors: {
-                        indigo: {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            200: '#ddd6fe',
-                            300: '#c4b5fd',
-                            400: '#a78bfa',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            800: '#5b21b6',
-                            900: '#4c1d95',
-                        },
-                    },
-                    animation: {
-                        'blob': 'blob 7s infinite',
-                        'entrance': 'entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                        },
-                        entrance: {
-                            '0%': { opacity: '0', transform: 'translateY(20px) scale(0.95)' },
-                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                        brand: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
                         }
                     }
                 }
@@ -60,77 +39,131 @@
     
     <style type="text/tailwindcss">
         @layer utilities {
-            .glass {
-                @apply bg-white/70 backdrop-blur-2xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)];
+            .scrollbar-hide::-webkit-scrollbar {
+                display: none;
             }
-            .btn-premium {
-                @apply relative overflow-hidden transition-all duration-300 active:scale-95;
-                background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            }
-            .btn-premium::after {
-                content: '';
-                @apply absolute inset-0 opacity-0 transition-opacity duration-300 bg-white/10;
-            }
-            .btn-premium:hover::after {
-                @apply opacity-100;
+            .scrollbar-hide {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
             }
         }
-
-        body {
-            background-color: #f8fafc;
-            background-image: 
-                radial-gradient(at 0% 0%, hsla(243, 75%, 90%, 1) 0, transparent 50%), 
-                radial-gradient(at 100% 0%, hsla(271, 91%, 95%, 1) 0, transparent 50%), 
-                radial-gradient(at 50% 100%, hsla(160, 84%, 93%, 1) 0, transparent 50%);
-            background-attachment: fixed;
+        
+        /* Standard generic form styling */
+        .form-input {
+            @apply w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-colors;
+        }
+        .form-label {
+            @apply block text-sm font-medium text-slate-700 mb-1;
+        }
+        .btn-primary {
+            @apply inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+        }
+        .btn-secondary {
+            @apply inline-flex justify-center items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors;
         }
     </style>
     @stack('styles')
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 selection:bg-indigo-100 italic-none">
-    <!-- Animated Blobs -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 blur-3xl opacity-60">
-        <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-200 rounded-full animate-blob"></div>
-        <div class="absolute top-1/2 -right-24 w-96 h-96 bg-purple-200 rounded-full animate-blob animation-delay-2000" style="animation-delay: 2s"></div>
-        <div class="absolute -bottom-24 left-1/4 w-96 h-96 bg-emerald-100 rounded-full animate-blob animation-delay-4000" style="animation-delay: 4s"></div>
-    </div>
+<body class="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-700">
+    
+    @php
+        $steps = [
+            ['route' => 'installer.requirements', 'name' => 'Requirements'],
+            ['route' => 'installer.database', 'name' => 'Database'],
+        ];
 
-    <div class="w-full max-w-[480px] animate-entrance">
-        <div class="glass rounded-[40px] overflow-hidden relative">
-            <!-- Sleek Top Progress -->
-            @php
-                $progress = 20;
-                if(request()->routeIs('installer.database')) $progress = 40;
-                elseif(request()->routeIs('installer.license')) $progress = 60;
-                elseif(request()->routeIs('installer.install')) $progress = 80;
-                elseif(request()->routeIs('installer.complete')) $progress = 100;
-            @endphp
-            <div class="absolute top-0 left-0 w-full h-1 bg-black/5 overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-in-out" style="width: {{ $progress }}%"></div>
+        if(config('laravel_installer.license_check', 'required') !== 'disabled') {
+            $steps[] = ['route' => 'installer.license', 'name' => 'License'];
+        }
+
+        $steps[] = ['route' => 'installer.install', 'name' => 'Installation'];
+        $steps[] = ['route' => 'installer.complete', 'name' => 'Complete'];
+
+        $currentStepIndex = 0;
+        foreach($steps as $index => $step) {
+            if(request()->routeIs($step['route']) || (request()->route()->getName() == '' && $index == 0)) {
+                $currentStepIndex = $index;
+            }
+        }
+    @endphp
+
+    <!-- Wizard Container -->
+    <div class="w-full max-w-4xl bg-white shadow-xl rounded-lg border border-slate-200 flex flex-col md:flex-row overflow-hidden min-h-[550px]">
+        
+        <!-- Sidebar (Steps Track) -->
+        <div class="w-full md:w-64 bg-slate-50 border-r border-slate-200 p-6 flex flex-col flex-shrink-0">
+            <div class="mb-8 flex items-center gap-3">
+                <div class="w-8 h-8 rounded bg-brand-600 text-white flex items-center justify-center shrink-0">
+                    <i class="bi bi-box-seam-fill"></i>
+                </div>
+                <h1 class="text-sm font-bold text-slate-900 leading-tight">
+                    {{ config('laravel_installer.app_name', 'System Setup') }}
+                </h1>
             </div>
 
-            <div class="pt-12 px-10 pb-4 text-center">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-200 mb-6 text-white text-4xl relative group">
-                    <i class="bi bi-rocket-takeoff group-hover:scale-110 transition-transform duration-500"></i>
-                    <div class="absolute inset-0 rounded-inherit bg-inherit filter blur-xl opacity-40 -z-10 scale-90 translate-y-3"></div>
-                </div>
-                <h2 class="text-3xl font-[800] tracking-tight text-slate-900 mb-1">
-                    {{ config('laravel_installer.app_name', 'Laravel') }}
-                </h2>
-                <p class="text-slate-500 font-medium text-sm">Setup Wizard</p>
+            <div class="flex-1">
+                <nav aria-label="Progress">
+                    <ol role="list" class="overflow-hidden">
+                        @foreach($steps as $index => $step)
+                            @php
+                                $isCompleted = $index < $currentStepIndex;
+                                $isActive = $index === $currentStepIndex;
+                                $isLast = $index === count($steps) - 1;
+                            @endphp
+                            
+                            <li class="relative {{ !$isLast ? 'pb-8' : '' }}">
+                                @if(!$isLast)
+                                    <div class="absolute left-3 top-4 -ml-px mt-0.5 h-full w-0.5 {{ $isCompleted ? 'bg-brand-600' : 'bg-slate-200' }}" aria-hidden="true"></div>
+                                @endif
+
+                                <div class="relative flex items-center group">
+                                    <span class="h-9 flex items-center">
+                                        @if($isCompleted)
+                                            <span class="relative z-10 w-6 h-6 flex items-center justify-center bg-brand-600 rounded-full">
+                                                <i class="bi bi-check text-white text-xs"></i>
+                                            </span>
+                                        @elseif($isActive)
+                                            <span class="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 border-brand-600 rounded-full">
+                                                <span class="h-2 w-2 bg-brand-600 rounded-full"></span>
+                                            </span>
+                                        @else
+                                            <span class="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 border-slate-300 rounded-full"></span>
+                                        @endif
+                                    </span>
+                                    <span class="ml-3 flex flex-col min-w-0">
+                                        <span class="text-sm font-medium {{ $isActive ? 'text-brand-600' : ($isCompleted ? 'text-slate-900' : 'text-slate-500') }}">{{ $step['name'] }}</span>
+                                    </span>
+                                </div>
+                            </li>
+                        @endforeach
+                    </ol>
+                </nav>
             </div>
             
-            <div class="px-10 pb-12">
-                @yield('content')
+            <div class="mt-8 pt-4 border-t border-slate-200">
+                <p class="text-xs text-slate-400">Setup Wizard v1.0</p>
             </div>
         </div>
-        
-        <div class="mt-8 text-center">
-            <p class="text-slate-400 text-[10px] font-bold tracking-[0.2em] flex items-center justify-center gap-2 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-                <span class="w-8 h-[1px] bg-slate-200"></span>
-                SECURE INSTALLATION
-                <span class="w-8 h-[1px] bg-slate-200"></span>
-            </p>
+
+        <!-- Content Area -->
+        <div class="flex-1 flex flex-col min-w-0 bg-white">
+            <!-- Header -->
+            <div class="px-8 py-6 border-b border-slate-100 flex-shrink-0">
+                <h2 class="text-xl font-semibold text-slate-800">@yield('title')</h2>
+                <p class="text-sm text-slate-500 mt-1">@yield('subtitle', 'Follow the steps to configure your system.')</p>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 p-8 overflow-y-auto scrollbar-hide">
+                @yield('content')
+            </div>
+
+            <!-- Footer Action Bar -->
+            @hasSection('footer')
+                <div class="px-8 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
+                    @yield('footer')
+                </div>
+            @endif
         </div>
     </div>
 
