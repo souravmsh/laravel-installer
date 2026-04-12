@@ -127,6 +127,29 @@ class InstallerController extends Controller
             return back()->withErrors(['database' => 'Failed to update configuration file.']);
         }
 
+        // Update runtime config and reconnect to the new database
+        config([
+            'database.connections.mysql.host' => $config['host'],
+            'database.connections.mysql.port' => $config['port'],
+            'database.connections.mysql.database' => $config['database'],
+            'database.connections.mysql.username' => $config['username'],
+            'database.connections.mysql.password' => $config['password'],
+        ]);
+        \Illuminate\Support\Facades\DB::purge('mysql');
+        \Illuminate\Support\Facades\DB::reconnect('mysql');
+
+        // Run migrations
+        $migrationResult = $this->databaseService->runMigrations();
+        if ($migrationResult !== true) {
+            return back()->withErrors(['database' => is_string($migrationResult) ? $migrationResult : 'Failed to run migrations.']);
+        }
+
+        // Run seeders
+        $seederResult = $this->databaseService->runSeeders();
+        if ($seederResult !== true) {
+            return back()->withErrors(['database' => is_string($seederResult) ? $seederResult : 'Failed to run seeders.']);
+        }
+
         // Check if license check is enabled
         if (config('laravel_installer.license_check', 'required') === 'disabled') {
             return redirect()->route('installer.install')->with('success', 'Database configured successfully!');
@@ -194,24 +217,6 @@ class InstallerController extends Controller
     public function processInstall()
     {
         try {
-            // Run migrations
-            $migrationResult = $this->databaseService->runMigrations();
-            if ($migrationResult !== true) {
-                return response()->json([
-                    'success' => false,
-                    'message' => is_string($migrationResult) ? $migrationResult : 'Failed to run migrations.'
-                ], 500);
-            }
-
-            // Run seeders
-            $seederResult = $this->databaseService->runSeeders();
-            if ($seederResult !== true) {
-                return response()->json([
-                    'success' => false,
-                    'message' => is_string($seederResult) ? $seederResult : 'Failed to run seeders.'
-                ], 500);
-            }
-
             // Store license information if enabled
             if (config('laravel_installer.license_check', 'required') !== 'disabled' && session()->has('license_key')) {
                 $this->licenseService->storeLicense(

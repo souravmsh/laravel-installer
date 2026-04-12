@@ -100,9 +100,8 @@ window.addEventListener('load', function() {
 
     let progress = 0;
     const steps = [
-        { text: 'Migrating Database', detail: 'Creating tables...', progress: 30, log: 'Running php artisan migrate...' },
-        { text: 'Seeding Data', detail: 'Inserting default records...', progress: 60, log: 'Running php artisan db:seed...' },
-        { text: 'Configuring Environment', detail: 'Setting up services...', progress: 85, log: 'Publishing core assets...' },
+        { text: 'Finalizing Configuration', detail: 'Setting up details...', progress: 50, log: 'Saving configuration...' },
+        { text: 'Saving License Data', detail: 'Storing license information...', progress: 85, log: 'Writing to database...' },
     ];
 
     let currentStep = 0;
