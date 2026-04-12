@@ -5,100 +5,146 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Installer') - {{ config('laravel_installer.app_name') }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: radial-gradient(circle at top left, #eef2ff 0%, #f5f3ff 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
         }
+
         .installer-container {
-            max-width: 700px;
+            max-width: 420px;
             width: 100%;
-            margin: 20px;
         }
+
         .installer-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
+
         .installer-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
+            padding: 40px 30px 20px;
             text-align: center;
         }
-        .installer-body {
-            padding: 40px;
-        }
-        .step-indicator {
+
+        .app-icon {
+            width: 64px;
+            height: 64px;
+            background: var(--primary-gradient);
+            border-radius: 18px;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 30px;
-        }
-        .step {
-            flex: 1;
-            text-align: center;
-            position: relative;
-        }
-        .step::after {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            width: 100%;
-            height: 2px;
-            background: #e0e0e0;
-            z-index: -1;
-        }
-        .step:last-child::after {
-            display: none;
-        }
-        .step-number {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #e0e0e0;
-            color: #999;
-            display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        .step.active .step-number {
-            background: #667eea;
+            margin: 0 auto 20px;
             color: white;
+            font-size: 28px;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
         }
-        .step.completed .step-number {
-            background: #28a745;
-            color: white;
+
+        .installer-body {
+            padding: 0 30px 40px;
         }
-        .requirement-item {
+
+        .step-indicator {
             display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid #f0f0f0;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 35px;
         }
-        .requirement-item:last-child {
-            border-bottom: none;
+
+        .step-dot {
+            height: 6px;
+            width: 24px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            transition: all 0.3s ease;
         }
+
+        .step-dot.active {
+            background: #6366f1;
+            width: 40px;
+        }
+
+        .step-dot.completed {
+            background: #10b981;
+        }
+
+        .form-control {
+            border-radius: 12px;
+            padding: 12px 16px;
+            border: 1px solid #e5e7eb;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            border-color: #6366f1;
+        }
+
         .btn-installer {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
+            padding: 14px 24px;
+            border-radius: 16px;
             color: white;
             font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
         }
+
         .btn-installer:hover {
-            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+            opacity: 0.95;
             color: white;
+        }
+
+        .btn-outline-secondary {
+            border-radius: 16px;
+            padding: 14px 24px;
+            border: 1px solid #e5e7eb;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .alert {
+            border-radius: 16px;
+            border: none;
+        }
+        
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
         }
     </style>
     @stack('styles')
@@ -107,58 +153,21 @@
     <div class="installer-container">
         <div class="installer-card">
             <div class="installer-header">
-                <h2 class="mb-0">
-                    <i class="bi bi-building"></i>
-                    {{ config('laravel_installer.app_name') }}
-                </h2>
-                <p class="mb-0 mt-2">Installation Wizard</p>
+                <div class="app-icon">
+                    <i class="bi bi-rocket-takeoff"></i>
+                </div>
+                <h3 class="fw-bold mb-1">{{ config('laravel_installer.app_name') }}</h3>
+                <p class="text-muted small">Setup Wizard</p>
             </div>
             <div class="installer-body">
                 <div class="step-indicator">
-                    <div class="step {{ Route::is('installer.requirements') ? 'active' : (Route::is('installer.database') || Route::is('installer.license') || Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}">
-                        <div class="step-number">
-                            @if(Route::is('installer.database') || Route::is('installer.license') || Route::is('installer.install') || Route::is('installer.complete'))
-                                <i class="bi bi-check"></i>
-                            @else
-                                1
-                            @endif
-                        </div>
-                        <small>Requirements</small>
-                    </div>
-                    <div class="step {{ Route::is('installer.database') ? 'active' : (Route::is('installer.license') || Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}">
-                        <div class="step-number">
-                            @if(Route::is('installer.license') || Route::is('installer.install') || Route::is('installer.complete'))
-                                <i class="bi bi-check"></i>
-                            @else
-                                2
-                            @endif
-                        </div>
-                        <small>Database</small>
-                    </div>
-                    
-                    @if(config('laravel_installer.license_check', true))
-                    <div class="step {{ Route::is('installer.license') ? 'active' : (Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}">
-                        <div class="step-number">
-                            @if(Route::is('installer.install') || Route::is('installer.complete'))
-                                <i class="bi bi-check"></i>
-                            @else
-                                3
-                            @endif
-                        </div>
-                        <small>License</small>
-                    </div>
+                    <div class="step-dot {{ Route::is('installer.requirements') ? 'active' : (Route::is('installer.database') || Route::is('installer.license') || Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}"></div>
+                    <div class="step-dot {{ Route::is('installer.database') ? 'active' : (Route::is('installer.license') || Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}"></div>
+                    @if(config('laravel_installer.license_check', 'required') !== 'disabled')
+                    <div class="step-dot {{ Route::is('installer.license') ? 'active' : (Route::is('installer.install') || Route::is('installer.complete') ? 'completed' : '') }}"></div>
                     @endif
-
-                    <div class="step {{ Route::is('installer.install') ? 'active' : (Route::is('installer.complete') ? 'completed' : '') }}">
-                        <div class="step-number">
-                            @if(Route::is('installer.complete'))
-                                <i class="bi bi-check"></i>
-                            @else
-                                @if(config('laravel_installer.license_check', true)) 4 @else 3 @endif
-                            @endif
-                        </div>
-                        <small>Install</small>
-                    </div>
+                    <div class="step-dot {{ Route::is('installer.install') ? 'active' : (Route::is('installer.complete') ? 'completed' : '') }}"></div>
+                    <div class="step-dot {{ Route::is('installer.complete') ? 'active' : '' }}"></div>
                 </div>
                 @yield('content')
             </div>

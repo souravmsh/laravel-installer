@@ -128,7 +128,7 @@ class InstallerController extends Controller
         }
 
         // Check if license check is enabled
-        if (!config('laravel_installer.license_check', true)) {
+        if (config('laravel_installer.license_check', 'required') === 'disabled') {
             return redirect()->route('installer.install')->with('success', 'Database configured successfully!');
         }
 
@@ -141,7 +141,7 @@ class InstallerController extends Controller
     public function license()
     {
         // Check if license check is enabled
-        if (!config('laravel_installer.license_check', true)) {
+        if (config('laravel_installer.license_check', 'required') === 'disabled') {
             return redirect()->route('installer.install');
         }
 
@@ -213,7 +213,7 @@ class InstallerController extends Controller
             }
 
             // Store license information if enabled
-            if (config('laravel_installer.license_check', true) && session()->has('license_key')) {
+            if (config('laravel_installer.license_check', 'required') !== 'disabled' && session()->has('license_key')) {
                 $this->licenseService->storeLicense(
                     session('license_name'),
                     session('license_email'),

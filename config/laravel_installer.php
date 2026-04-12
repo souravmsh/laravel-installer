@@ -21,8 +21,13 @@ return [
     | This value determines if the installer should check for a valid license
     | key before allowing the installation to proceed.
     |
+    | Supported options:
+    | - 'required': License key must be validated before installation.
+    | - 'optional': License check step is shown but can be skipped.
+    | - 'disabled': License check step is skipped entirely.
+    |
     */
-    'license_check' => true,
+    'license_check' => 'required',
 
     /*
     |--------------------------------------------------------------------------

@@ -8,8 +8,8 @@ A sleek, modern, and easy-to-use web-based installer for Laravel applications. T
 - **Permissions Check**: Ensures necessary directories are writable.
 - **Environment Configuration**: Easy setup for `.env` variables.
 - **Database Setup**: Wizard for database connection and migration.
-- **License Validation**: Built-in support for license key validation.
-- **Modern UI**: Clean and responsive design.
+- **License Validation**: Flexible support for license key validation (Required, Optional, or Disabled).
+- **Modern Mobile-App UI**: Sleek, glassmorphism-based design optimized for clarity and ease of use.
 
 ## Installation
 
@@ -48,7 +48,10 @@ The configuration file is located at `config/laravel_installer.php`. You can cus
 ```php
 return [
     'app_name' => env('APP_NAME', 'Laravel Application'),
-    'license_check' => true,
+    
+    // Supported: "required", "optional", "disabled"
+    'license_check' => 'required',
+    
     'license_server_url' => 'https://codekernel.net/api/v1/license',
     'license_storage_path' => 'app/private/key.private',
 ];

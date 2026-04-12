@@ -6,31 +6,27 @@
 
 
 <div class="text-center mb-4">
-    <h3>Welcome to the Installer</h3>
-    <p class="text-muted">Let's get your {{ config('laravel_installer.app_name') }} up and running!</p>
+    <h4 class="fw-bold">Welcome</h4>
+    <p class="text-muted small">Let's get your application ready.</p>
 </div>
 
-<div class="card mb-4">
-    <div class="card-header">
-        <h5 class="mb-0">System Requirements</h5>
-    </div>
-    <div class="card-body p-0">
-        @foreach($requirements as $key => $requirement)
-        <div class="requirement-item">
-            <span>{{ $requirement['name'] }}</span>
-            <span>
-                @if($requirement['status'])
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                    @if(isset($requirement['current']))
-                        <small class="text-muted">({{ $requirement['current'] }})</small>
-                    @endif
-                @else
-                    <i class="bi bi-x-circle-fill text-danger"></i>
+<div class="mb-4">
+    <label class="form-label fw-bold mb-3 small text-uppercase tracking-wider">System Requirements</label>
+    @foreach($requirements as $key => $requirement)
+    <div class="requirement-item">
+        <span class="small fw-medium">{{ $requirement['name'] }}</span>
+        <span>
+            @if($requirement['status'])
+                <i class="bi bi-check-circle-fill text-success"></i>
+                @if(isset($requirement['current']))
+                    <small class="text-muted ms-1" style="font-size: 0.75rem;">({{ $requirement['current'] }})</small>
                 @endif
-            </span>
-        </div>
-        @endforeach
+            @else
+                <i class="bi bi-x-circle-fill text-danger"></i>
+            @endif
+        </span>
     </div>
+    @endforeach
 </div>
 
 @php
@@ -38,17 +34,17 @@
 @endphp
 
 @if($allPassed)
-    <div class="alert alert-success">
-        <i class="bi bi-check-circle"></i> All requirements are met! You can proceed with the installation.
+    <div class="alert alert-success d-flex align-items-center mb-4" style="background: rgba(16, 185, 129, 0.1); color: #065f46;">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <small class="fw-medium">Ready to proceed!</small>
     </div>
-    <div class="text-center">
-        <a href="{{ route('installer.database') }}" class="btn btn-installer btn-lg">
-            Continue <i class="bi bi-arrow-right"></i>
-        </a>
-    </div>
+    <a href="{{ route('installer.database') }}" class="btn btn-installer">
+        Get Started <i class="bi bi-arrow-right ms-1"></i>
+    </a>
 @else
-    <div class="alert alert-danger">
-        <i class="bi bi-exclamation-triangle"></i> Some requirements are not met. Please fix them before proceeding.
+    <div class="alert alert-danger d-flex align-items-center mb-4" style="background: rgba(239, 68, 68, 0.1); color: #991b1b;">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <small class="fw-medium">Fix requirements to continue.</small>
     </div>
 @endif
 @endsection
