@@ -50,7 +50,7 @@ class InstallerController extends Controller
         ]);
 
         $config = $request->only(['host', 'port', 'database', 'username', 'password']);
-        
+
         $connectionResult = $this->databaseService->testConnection($config);
 
         if ($connectionResult === true) {
@@ -59,7 +59,7 @@ class InstallerController extends Controller
                 'message' => 'Database connection successful!'
             ]);
         }
-        
+
         if ($connectionResult === 'missing_database') {
             return response()->json([
                 'success' => false,
@@ -88,7 +88,7 @@ class InstallerController extends Controller
         ]);
 
         $config = $request->only(['host', 'port', 'database', 'username', 'password']);
-        
+
         if ($this->databaseService->createDatabase($config)) {
             return response()->json([
                 'success' => true,
@@ -116,7 +116,7 @@ class InstallerController extends Controller
         ]);
 
         $config = $request->only(['host', 'port', 'database', 'username', 'password']);
-        
+
         // Test connection first
         if (!$this->databaseService->testConnection($config)) {
             return back()->withErrors(['database' => 'Database connection failed.']);
@@ -223,7 +223,7 @@ class InstallerController extends Controller
             }
 
             // Create install lock file
-            File::put(config('laravel_installer.installed_flag_path', storage_path('app/private/key.install')), now()->toDateTimeString());
+            File::put(storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install')), now()->toDateTimeString());
 
             // Clear session
             session()->forget(['license_name', 'license_email', 'license_key', 'license_data']);

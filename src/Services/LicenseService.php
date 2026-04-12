@@ -68,9 +68,9 @@ class LicenseService
                 return false;
             }
 
-            $licensePath = config('laravel_installer.license_storage_path', 'app/private/key.private');
-            $directory = storage_path(dirname($licensePath));
-            $filePath = storage_path($licensePath);
+            $licensePath = storage_path(config('laravel_installer.license_storage_path', 'app/private/key.private'));
+            $directory = dirname($licensePath);
+            $filePath = $licensePath;
 
             if (!File::exists($directory)) {
                 File::makeDirectory($directory, 0755, true);

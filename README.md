@@ -30,16 +30,19 @@ The package will automatically register itself using Laravel's package discovery
 You can publish the configuration file and views using the following commands:
 
 **Publish All:**
+
 ```bash
 php artisan vendor:publish --tag="laravel-installer-publish"
 ```
 
 **Publish Configuration Only:**
+
 ```bash
 php artisan vendor:publish --tag="laravel-installer-config"
 ```
 
 **Publish Views Only:**
+
 ```bash
 php artisan vendor:publish --tag="laravel-installer-views"
 ```
@@ -47,6 +50,7 @@ php artisan vendor:publish --tag="laravel-installer-views"
 ### 3. Middleware
 
 The package provides two middlewares:
+
 - `installer.check`: Ensures the application is installed before allowing access.
 - `installer.redirect`: Redirects to the homepage if the application is already installed.
 
@@ -62,11 +66,11 @@ return [
     'installer_enabled' => env('INSTALLER_ENABLED', true),
 
     // Path to the installation lock file
-    'installed_flag_path' => storage_path('app/private/key.install'),
-    
+    'installed_key_path' => env('INSTALLER_KEY_PATH', 'app/private/key.install'),
+
     // Supported: "required", "optional", "disabled"
     'license_check' => 'required',
-    
+
     'license_server_url' => 'https://codekernel.net/api/v1/license',
     'license_storage_path' => 'app/private/key.private',
 ];

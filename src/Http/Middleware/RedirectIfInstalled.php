@@ -18,7 +18,7 @@ class RedirectIfInstalled
             abort(404);
         }
 
-        $installLockFile = config('laravel_installer.installed_flag_path', storage_path('app/private/key.install'));
+        $installLockFile = storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install'));
 
         if (File::exists($installLockFile)) {
             return redirect('/')->with('error', 'Application is already installed.');
