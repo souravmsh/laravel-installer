@@ -69,10 +69,10 @@ return [
     'installed_key_path' => env('INSTALLER_KEY_PATH', 'app/private/key.install'),
 
     // Supported: "required", "optional", "disabled"
-    'license_check' => 'required',
+    'license_check' => env('INSTALLER_LICENSE', 'optional'),
 
-    'license_server_url' => 'https://codekernel.net/api/v1/license',
-    'license_storage_path' => 'app/private/key.private',
+    'license_server_url' => env('INSTALLER_LICENSE_URL', 'null'),
+    'license_storage_path' => env('INSTALLER_LICENSE_KEY_PATH', 'app/private/key.private'),
 ];
 ```
 
