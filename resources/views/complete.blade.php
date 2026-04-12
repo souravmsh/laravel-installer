@@ -24,10 +24,9 @@
     <div class="card-body">
         <dl class="row mb-0">
             <dt class="col-sm-4 text-muted fw-normal small">Email Address</dt>
-            <dd class="col-sm-8 fw-medium text-dark mb-2">admin@admin.com</dd>
-
+            <dd class="col-sm-8 fw-medium text-dark mb-2">{{ config('laravel_installer.admin_email', 'admin@admin.com') }}</dd>
             <dt class="col-sm-4 text-muted fw-normal small">Password</dt>
-            <dd class="col-sm-8 fw-medium text-dark mb-0">password</dd>
+            <dd class="col-sm-8 fw-medium text-dark mb-0">{{ config('laravel_installer.admin_password', 'password') }}</dd>
         </dl>
     </div>
 </div>
@@ -42,8 +41,10 @@
 @endsection
 
 @section('footer')
-    <div></div> <!-- Spacer -->
-    <a href="{{ url('/') }}" class="btn btn-primary px-4 fw-medium">
-        Go to Application <i class="bi bi-box-arrow-up-right ms-1 small"></i>
-    </a>
+    <div class="w-100 d-flex justify-content-end align-items-center">
+        <a href="{{ url('/') }}" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
+            <span>Go to Application</span>
+            <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
 @endsection

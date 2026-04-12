@@ -15,7 +15,7 @@ return [
 
     'installer_enabled' => env('INSTALLER_ENABLED', true),
 
-    'installed_key_path' => env('INSTALLER_KEY_PATH', 'private/key.install'),
+    'installed_key_path' => env('INSTALLER_KEY_PATH', 'app/private/key.install'),
 
     /*
     |--------------------------------------------------------------------------
@@ -54,4 +54,16 @@ return [
     |
     */
     'license_storage_path' => env('INSTALLER_LICENSE_KEY_PATH', 'private/key.private'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Credentials
+    |--------------------------------------------------------------------------
+    |
+    | These credentials will be used to create the initial administrator
+    | account if it does not already exist after the database is set up.
+    |
+    */
+    'admin_email' => env('INSTALLER_ADMIN_EMAIL', 'superadmin@codekernel.net'),
+    'admin_password' => env('INSTALLER_ADMIN_PASSWORD', '12345678'),
 ];

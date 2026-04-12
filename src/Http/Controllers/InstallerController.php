@@ -113,6 +113,7 @@ class InstallerController extends Controller
             'database' => 'required',
             'username' => 'required',
             'password' => 'nullable',
+            'confirm_wipe' => 'required|accepted',
         ]);
 
         $config = $request->only(['host', 'port', 'database', 'username', 'password']);
@@ -149,6 +150,9 @@ class InstallerController extends Controller
         if ($seederResult !== true) {
             return back()->withErrors(['database' => is_string($seederResult) ? $seederResult : 'Failed to run seeders.']);
         }
+
+        // Ensure admin user exists
+        $this->ensureAdminUser();
 
         // Check if license check is enabled
         if (config('laravel_installer.license_check', 'required') === 'disabled') {
@@ -314,5 +318,29 @@ class InstallerController extends Controller
                             : is_writable(dirname(app()->environmentFilePath())),
             ],
         ];
+    }
+
+    /**
+     * Ensure the administrator user exists in the database
+     */
+    protected function ensureAdminUser(): void
+    {
+        try {
+            $adminEmail = config('laravel_installer.admin_email', 'admin@admin.com');
+            $exists = \Illuminate\Support\Facades\DB::table('users')->where('email', $adminEmail)->exists();
+            
+            if (!$exists) {
+                \Illuminate\Support\Facades\DB::table('users')->insert([
+                    'name' => 'Administrator',
+                    'email' => $adminEmail,
+                    'password' => \Illuminate\Support\Facades\Hash::make(config('laravel_installer.admin_password', 'password')),
+                    'email_verified_at' => now(),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Log or handle error if needed, but don't block installation
+        }
     }
 }

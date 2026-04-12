@@ -47,6 +47,16 @@
             <label for="password" class="form-label fw-medium small text-secondary">Password</label>
             <input type="password" name="password" id="password" class="form-control" value="{{ old('password') }}">
         </div>
+
+        <div class="col-12 mt-4">
+            <div class="form-check p-3 border rounded bg-light">
+                <input class="form-check-input ms-0" type="checkbox" name="confirm_wipe" value="1" id="confirmWipe" required>
+                <label class="form-check-label ms-2 fw-medium text-dark" for="confirmWipe">
+                    I understand that this will wipe the database and run migrations/seeders.
+                </label>
+                <div class="form-text mt-1 ms-2">This will clear any existing data in the specified database.</div>
+            </div>
+        </div>
     </div>
 </form>
 
@@ -55,13 +65,17 @@
 @endsection
 
 @section('footer')
-    <button type="button" class="btn btn-outline-secondary px-4" id="testConnectionBtn">
-        Test Connection
-    </button>
-    
-    <button type="button" onclick="document.getElementById('databaseForm').submit();" class="btn btn-primary px-4">
-        Next step <i class="bi bi-chevron-right ms-1 small"></i>
-    </button>
+    <div class="w-100 d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-outline-secondary px-4 fw-medium d-flex align-items-center gap-2" id="testConnectionBtn">
+            <i class="bi bi-plug"></i>
+            <span>Test Connection</span>
+        </button>
+        
+        <button type="button" onclick="document.getElementById('databaseForm').submit();" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
+            <span>Next step</span>
+            <i class="bi bi-arrow-right"></i>
+        </button>
+    </div>
 @endsection
 
 @push('scripts')

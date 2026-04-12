@@ -26,19 +26,19 @@
     </div>
 </div>
 
-<div id="installComplete" style="display: none;" class="py-5 text-center">
+<div id="installComplete" class="d-none py-5 text-center">
     <div class="d-inline-flex justify-content-center align-items-center bg-success bg-opacity-10 rounded-circle mb-4" style="width: 80px; height: 80px;">
         <i class="bi bi-check-lg text-success" style="font-size: 40px;"></i>
     </div>
-    <h3 class="fw-bold mb-2">Installation Successful</h3>
+    <h3 class="fw-bold mb-2 text-dark">Installation Successful</h3>
     <p class="text-muted">The application database has been installed successfully.</p>
 </div>
 
-<div id="installError" style="display: none;" class="py-5 text-center">
+<div id="installError" class="d-none py-5 text-center">
     <div class="d-inline-flex justify-content-center align-items-center bg-danger bg-opacity-10 rounded-circle mb-4" style="width: 80px; height: 80px;">
         <i class="bi bi-x-lg text-danger" style="font-size: 40px;"></i>
     </div>
-    <h3 class="fw-bold mb-3">Installation Failed</h3>
+    <h3 class="fw-bold mb-3 text-dark">Installation Failed</h3>
     <div id="errorMessage" class="alert alert-danger text-start mx-auto mb-0" style="max-width: 400px;">
         An error occurred.
     </div>
@@ -47,27 +47,31 @@
 @endsection
 
 @section('footer')
-    <div id="footerInstall" class="w-100 d-flex justify-content-between">
-        <button type="button" disabled class="btn btn-outline-secondary invisible pe-none">
-            <!-- empty space --> Back
+    <div id="footerInstall" class="w-100 d-flex justify-content-between align-items-center">
+        <button type="button" disabled class="btn btn-outline-secondary opacity-0 pe-none">
+            <i class="bi bi-arrow-left me-1"></i> Back
         </button>
-        <button type="button" disabled id="installNextBtn" class="btn btn-primary px-4 opacity-50 pe-none">
-            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Installing...
+        <button type="button" disabled id="installNextBtn" class="btn btn-primary px-4 d-flex align-items-center gap-2">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>Installing...</span>
         </button>
     </div>
     
-    <div id="footerComplete" style="display: none;" class="w-100 d-flex justify-content-end">
-        <a href="{{ route('installer.complete') }}" class="btn btn-primary px-4">
-            Finish <i class="bi bi-chevron-right ms-1 small"></i>
+    <div id="footerComplete" class="w-100 d-none justify-content-end align-items-center">
+        <a href="{{ route('installer.complete') }}" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
+            <span>Finish</span>
+            <i class="bi bi-arrow-right"></i>
         </a>
     </div>
 
-    <div id="footerError" style="display: none;" class="w-100 d-flex justify-content-between">
-        <a href="{{ route('installer.database') }}" class="btn btn-outline-secondary px-4">
-            <i class="bi bi-chevron-left me-1 small"></i> Back to Database
+    <div id="footerError" class="w-100 d-none justify-content-between align-items-center">
+        <a href="{{ route('installer.database') }}" class="btn btn-outline-secondary px-4 d-flex align-items-center gap-2">
+            <i class="bi bi-arrow-left"></i>
+            <span>Back to Database</span>
         </a>
         <button type="button" disabled class="btn btn-primary px-4 opacity-50 pe-none">
-            Next step <i class="bi bi-chevron-right ms-1 small"></i>
+            <span>Next step</span>
+            <i class="bi bi-chevron-right ms-1 small"></i>
         </button>
     </div>
 @endsection
@@ -142,28 +146,37 @@ window.addEventListener('load', function() {
                 logToConsole('Installation completed successfully.');
                 
                 setTimeout(() => {
-                    installProgress.style.display = 'none';
-                    installComplete.style.display = 'block';
+                    installProgress.classList.add('d-none');
+                    installComplete.classList.remove('d-none');
                     
-                    footerInstall.style.display = 'none';
-                    footerComplete.style.display = 'flex';
+                    footerInstall.classList.add('d-none');
+                    footerInstall.classList.remove('d-flex');
+                    
+                    footerComplete.classList.remove('d-none');
+                    footerComplete.classList.add('d-flex');
                 }, 800);
             } else {
-                installProgress.style.display = 'none';
+                installProgress.classList.add('d-none');
                 errorMessage.textContent = data.message;
-                installError.style.display = 'block';
+                installError.classList.remove('d-none');
                 
-                footerInstall.style.display = 'none';
-                footerError.style.display = 'flex';
+                footerInstall.classList.add('d-none');
+                footerInstall.classList.remove('d-flex');
+                
+                footerError.classList.remove('d-none');
+                footerError.classList.add('d-flex');
             }
         })
         .catch(error => {
-            installProgress.style.display = 'none';
+            installProgress.classList.add('d-none');
             errorMessage.textContent = 'An expected error occurred during setup.';
-            installError.style.display = 'block';
+            installError.classList.remove('d-none');
             
-            footerInstall.style.display = 'none';
-            footerError.style.display = 'flex';
+            footerInstall.classList.add('d-none');
+            footerInstall.classList.remove('d-flex');
+            
+            footerError.classList.remove('d-none');
+            footerError.classList.add('d-flex');
         });
     }
 

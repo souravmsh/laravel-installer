@@ -59,15 +59,17 @@
 @endsection
 
 @section('footer')
-    <div></div> <!-- Empty div for flex space-between -->
-    
-    @if($allPassed)
-        <a href="{{ route('installer.database') }}" class="btn btn-primary px-4">
-            Next step <i class="bi bi-chevron-right ms-1 small"></i>
-        </a>
-    @else
-        <button disabled class="btn btn-primary px-4 opacity-50 pe-none">
-            Next step <i class="bi bi-chevron-right ms-1 small"></i>
-        </button>
-    @endif
+    <div class="w-100 d-flex justify-content-end align-items-center">
+        @if($allPassed)
+            <a href="{{ route('installer.database') }}" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
+                <span>Next step</span>
+                <i class="bi bi-arrow-right"></i>
+            </a>
+        @else
+            <button disabled class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 opacity-50 pe-none">
+                <span>Next step</span>
+                <i class="bi bi-arrow-right"></i>
+            </button>
+        @endif
+    </div>
 @endsection
