@@ -13,6 +13,11 @@ class RedirectIfInstalled
      */
     public function handle(Request $request, Closure $next)
     {
+        // Check if installer is enabled
+        if (!config('laravel_installer.installer_enabled', true)) {
+            abort(404);
+        }
+
         $installLockFile = storage_path('.installed');
 
         if (File::exists($installLockFile)) {

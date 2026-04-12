@@ -27,10 +27,21 @@ The package will automatically register itself using Laravel's package discovery
 
 ### 2. Publish Configuration and Assets
 
-Publish the views:
+You can publish the configuration file and views using the following commands:
 
+**Publish All:**
 ```bash
-php artisan vendor:publish --tag="installer-views"
+php artisan vendor:publish --tag="laravel-installer-publish"
+```
+
+**Publish Configuration Only:**
+```bash
+php artisan vendor:publish --tag="laravel-installer-config"
+```
+
+**Publish Views Only:**
+```bash
+php artisan vendor:publish --tag="laravel-installer-views"
 ```
 
 ### 3. Middleware
@@ -41,13 +52,14 @@ The package provides two middlewares:
 
 You should apply these to your routes as needed.
 
-## Configuration
-
 The configuration file is located at `config/laravel_installer.php`. You can customize the application name, license server, and other settings here.
 
 ```php
 return [
     'app_name' => env('APP_NAME', 'Laravel Application'),
+
+    // Enable or disable the installer
+    'installer_enabled' => env('INSTALLER_ENABLED', true),
     
     // Supported: "required", "optional", "disabled"
     'license_check' => 'required',

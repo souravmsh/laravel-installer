@@ -13,6 +13,8 @@ return [
     */
     'app_name' => env('APP_NAME', 'Laravel Application'),
 
+    'installer_enabled' => env('INSTALLER_ENABLED', true),
+
     /*
     |--------------------------------------------------------------------------
     | License Check
@@ -27,7 +29,7 @@ return [
     | - 'disabled': License check step is skipped entirely.
     |
     */
-    'license_check' => 'required',
+    'license_check' => env('INSTALLER_LICENSE', 'optional'),
 
     /*
     |--------------------------------------------------------------------------
@@ -38,7 +40,7 @@ return [
     | be validated.
     |
     */
-    'license_server_url' => 'https://codekernel.net/api/v1/license',
+    'license_server_url' => env('INSTALLER_LICENSE_URL', 'https://codekernel.net/api/v1/license'),
 
     /*
     |--------------------------------------------------------------------------
@@ -49,5 +51,5 @@ return [
     | license key will be stored.
     |
     */
-    'license_storage_path' => 'app/private/key.private',
+    'license_storage_path' => env('INSTALLER_LICENSE_PATH', 'app/private/key.private'),
 ];
