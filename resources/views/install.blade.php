@@ -4,57 +4,81 @@
 
 @section('content')
 
-
-<div class="text-center mb-4">
-    <h4 class="fw-bold">Installing</h4>
-    <p class="text-muted small">Setting up your environment.</p>
+<div class="text-center mb-10">
+    <h4 class="text-xl font-bold text-slate-900">Finalizing Setup</h4>
+    <p class="text-slate-500 text-sm">Please wait while we prepare your environment.</p>
 </div>
 
-<div id="installProgress">
-    <div class="mb-4">
-        <div class="d-flex align-items-center mb-3">
-            <div class="spinner-grow text-primary me-3" role="status" style="width: 20px; height: 20px; background-color: #6366f1;">
-                <span class="visually-hidden">Loading...</span>
+<div id="installProgress" class="animate-entrance">
+    <div class="mb-8">
+        <div class="flex items-start gap-4 mb-6">
+            <div class="relative flex-shrink-0">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                    <i class="bi bi-gear-fill animate-[spin_3s_linear_infinite] text-xl"></i>
+                </div>
+                <div class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white"></div>
             </div>
-            <div>
-                <h6 class="mb-0 fw-bold small" id="statusText">Preparing...</h6>
-                <p class="text-muted mb-0" style="font-size: 0.75rem;" id="statusDetail">Hang tight.</p>
+            <div class="pt-1">
+                <h6 class="mb-1 font-bold text-slate-800 text-sm leading-none" id="statusText">Preparing Workspace...</h6>
+                <p class="text-slate-400 font-semibold text-[11px] uppercase tracking-wider" id="statusDetail">Initial verification in progress</p>
             </div>
         </div>
         
-        <div class="progress" style="height: 8px; border-radius: 4px; background: rgba(0,0,0,0.05); overflow: visible;">
-            <div class="progress-bar" role="progressbar" 
-                 style="width: 0%; background: var(--primary-gradient); border-radius: 4px; transition: width 0.5s ease; position: relative;" id="progressBar">
-                 <div style="position: absolute; right: 0; top: -25px; font-size: 0.7rem; font-weight: 700; color: #6366f1;" id="progressPercent">0%</div>
+        <div class="relative pt-1">
+            <div class="flex mb-2 items-center justify-between">
+                <div>
+                    <span class="text-[10px] font-bold inline-block py-1 px-2 uppercase rounded-full text-indigo-600 bg-indigo-100/50">
+                        Installation Progress
+                    </span>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs font-bold inline-block text-indigo-600" id="progressPercent">
+                        0%
+                    </span>
+                </div>
+            </div>
+            <div class="overflow-hidden h-2.5 mb-4 text-xs flex rounded-full bg-slate-100">
+                <div id="progressBar" style="width:0%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-out"></div>
             </div>
         </div>
     </div>
+    
+    <div class="bg-indigo-50/30 border border-indigo-100/50 p-4 rounded-2xl">
+        <p class="text-[11px] font-medium text-slate-500 leading-relaxed italic text-center">
+            "We are setting up the database, configurations, and core assets to ensure everything runs smoothly."
+        </p>
+    </div>
 </div>
 
-<div id="installComplete" style="display: none;" class="text-center">
-    <div class="mb-4">
-        <div class="mx-auto bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-            <i class="bi bi-check2-all text-success" style="font-size: 40px;"></i>
+<div id="installComplete" style="display: none;" class="text-center animate-entrance">
+    <div class="mb-6">
+        <div class="mx-auto w-24 h-24 bg-emerald-100 rounded-[32px] flex items-center justify-center text-emerald-600 shadow-xl shadow-emerald-100 relative">
+            <i class="bi bi-check-lg text-5xl"></i>
+            <div class="absolute inset-0 rounded-inherit bg-inherit filter blur-xl opacity-40 -z-10 scale-90 translate-y-3"></div>
         </div>
     </div>
-    <h4 class="fw-bold mb-2">Success!</h4>
-    <p class="text-muted small mb-4">Everything is ready for you.</p>
-    <a href="{{ route('installer.complete') }}" class="btn btn-installer">
-        Finish Setup <i class="bi bi-arrow-right ms-1"></i>
+    <h4 class="text-2xl font-800 text-slate-900 mb-2">Installation Complete!</h4>
+    <p class="text-slate-500 font-medium text-sm mb-8">Your application has been successfully configured and is ready for use.</p>
+    
+    <a href="{{ route('installer.complete') }}" class="btn-premium w-full py-4 rounded-2xl text-white font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-200 group">
+        <span>Launch Application</span>
+        <i class="bi bi-rocket-takeoff transition-transform group-hover:scale-110"></i>
     </a>
 </div>
 
-<div id="installError" style="display: none;" class="text-center">
-    <div class="mb-4">
-        <div class="mx-auto bg-danger bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px;">
-            <i class="bi bi-x-lg text-danger" style="font-size: 32px;"></i>
+<div id="installError" style="display: none;" class="text-center animate-entrance">
+    <div class="mb-6 text-rose-500">
+        <div class="mx-auto w-20 h-20 bg-rose-100 rounded-[28px] flex items-center justify-center text-rose-600 shadow-lg shadow-rose-100">
+            <i class="bi bi-exclamation-octagon text-4xl"></i>
         </div>
     </div>
-    <h4 class="fw-bold mb-2">Oops!</h4>
-    <p id="errorMessage" class="text-muted small mb-4">Something went wrong during setup.</p>
-    <div class="d-grid">
-        <a href="{{ route('installer.database') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-1"></i> Try Again
+    <h4 class="text-xl font-bold text-slate-900 mb-2">Setup Interrupted</h4>
+    <p id="errorMessage" class="text-slate-500 text-sm mb-8 italic">Something went wrong during the setup process.</p>
+    
+    <div class="flex flex-col gap-3">
+        <a href="{{ route('installer.database') }}" class="w-full py-4 rounded-2xl bg-white border border-slate-200 text-slate-600 font-bold text-sm tracking-wide hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
+            <i class="bi bi-arrow-left"></i>
+            Return to Database Config
         </a>
     </div>
 </div>
@@ -70,14 +94,15 @@ window.addEventListener('load', function() {
     const installComplete = document.getElementById('installComplete');
     const installError = document.getElementById('installError');
     const errorMessage = document.getElementById('errorMessage');
+    const progressPercent = document.getElementById('progressPercent');
 
     // Simulate installation steps
     let progress = 0;
     const steps = [
-        { text: 'Running database migrations...', detail: 'Creating tables and schema', progress: 25 },
-        { text: 'Seeding database...', detail: 'Populating initial data', progress: 50 },
-        { text: 'Configuring application...', detail: 'Setting up configurations', progress: 75 },
-        { text: 'Finalizing installation...', detail: 'Almost done!', progress: 90 }
+        { text: 'Migrating Schema', detail: 'Creating core database tables', progress: 25 },
+        { text: 'Seeding Data', detail: 'Populating initial application state', progress: 50 },
+        { text: 'Optimizing Config', detail: 'Writing environment variables', progress: 75 },
+        { text: 'Finalizing', detail: 'Clearing cache and warming services', progress: 90 }
     ];
 
     let currentStep = 0;
@@ -88,11 +113,10 @@ window.addEventListener('load', function() {
             statusText.textContent = step.text;
             statusDetail.textContent = step.detail;
             progressBar.style.width = step.progress + '%';
-            document.getElementById('progressPercent').textContent = step.progress + '%';
+            progressPercent.textContent = step.progress + '%';
             currentStep++;
-            setTimeout(updateProgress, 1500);
+            setTimeout(updateProgress, 1200);
         } else {
-            // Actually run the installation
             runInstallation();
         }
     }
@@ -109,11 +133,14 @@ window.addEventListener('load', function() {
         .then(data => {
             if (data.success) {
                 progressBar.style.width = '100%';
-                document.getElementById('progressPercent').textContent = '100%';
+                progressPercent.textContent = '100%';
                 setTimeout(() => {
-                    installProgress.style.display = 'none';
-                    installComplete.style.display = 'block';
-                }, 500);
+                    installProgress.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+                    setTimeout(() => {
+                        installProgress.style.display = 'none';
+                        installComplete.style.display = 'block';
+                    }, 500);
+                }, 800);
             } else {
                 installProgress.style.display = 'none';
                 errorMessage.textContent = data.message;
@@ -122,13 +149,12 @@ window.addEventListener('load', function() {
         })
         .catch(error => {
             installProgress.style.display = 'none';
-            errorMessage.textContent = 'An unexpected error occurred: ' + error.message;
+            errorMessage.textContent = 'A critical error occurred: ' + error.message;
             installError.style.display = 'block';
         });
     }
 
-    // Start the installation process
-    setTimeout(updateProgress, 1000);
+    setTimeout(updateProgress, 800);
 });
 </script>
 @endpush

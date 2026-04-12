@@ -4,176 +4,136 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Installer') - {{ config('laravel_installer.app_name') }}</title>
+    <title>@yield('title', 'Installer') - {{ config('laravel_installer.app_name', 'Laravel') }}</title>
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        :root {
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        indigo: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                        },
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'entrance': 'entrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                        },
+                        entrance: {
+                            '0%': { opacity: '0', transform: 'translateY(20px) scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glass {
+                @apply bg-white/70 backdrop-blur-2xl border border-white/40 shadow-[0_20px_50px_rgba(0,0,0,0.1)];
+            }
+            .btn-premium {
+                @apply relative overflow-hidden transition-all duration-300 active:scale-95;
+                background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            }
+            .btn-premium::after {
+                content: '';
+                @apply absolute inset-0 opacity-0 transition-opacity duration-300 bg-white/10;
+            }
+            .btn-premium:hover::after {
+                @apply opacity-100;
+            }
         }
 
         body {
-            background: radial-gradient(circle at top left, #eef2ff 0%, #f5f3ff 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Inter', sans-serif;
-            color: var(--text-main);
-            margin: 0;
-            padding: 20px;
-        }
-
-        .installer-container {
-            max-width: 420px;
-            width: 100%;
-        }
-
-        .installer-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 32px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-
-        .installer-header {
-            padding: 40px 30px 20px;
-            text-align: center;
-        }
-
-        .app-icon {
-            width: 64px;
-            height: 64px;
-            background: var(--primary-gradient);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            color: white;
-            font-size: 28px;
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
-        }
-
-        .installer-body {
-            padding: 0 30px 40px;
-        }
-
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 35px;
-        }
-
-        .step-dot {
-            height: 6px;
-            width: 24px;
-            border-radius: 3px;
-            background: #e5e7eb;
-            transition: all 0.3s ease;
-        }
-
-        .step-dot.active {
-            background: #6366f1;
-            width: 40px;
-        }
-
-        .step-dot.completed {
-            background: #10b981;
-        }
-
-        .form-control {
-            border-radius: 12px;
-            padding: 12px 16px;
-            border: 1px solid #e5e7eb;
-            background: rgba(255, 255, 255, 0.5);
-        }
-
-        .form-control:focus {
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-            border-color: #6366f1;
-        }
-
-        .btn-installer {
-            background: var(--primary-gradient);
-            border: none;
-            padding: 14px 24px;
-            border-radius: 16px;
-            color: white;
-            font-weight: 600;
-            width: 100%;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
-        }
-
-        .btn-installer:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
-            opacity: 0.95;
-            color: white;
-        }
-
-        .btn-outline-secondary {
-            border-radius: 16px;
-            padding: 14px 24px;
-            border: 1px solid #e5e7eb;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .alert {
-            border-radius: 16px;
-            border: none;
-        }
-        
-        .requirement-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255, 255, 255, 0.4);
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 8px;
+            background-color: #f8fafc;
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(243, 75%, 90%, 1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(271, 91%, 95%, 1) 0, transparent 50%), 
+                radial-gradient(at 50% 100%, hsla(160, 84%, 93%, 1) 0, transparent 50%);
+            background-attachment: fixed;
         }
     </style>
     @stack('styles')
 </head>
-<body>
-    <div class="installer-container">
-        <div class="installer-card">
-            <div class="installer-header">
-                <div class="app-icon">
-                    <i class="bi bi-rocket-takeoff"></i>
-                </div>
-                <h3 class="fw-bold mb-1">{{ config('laravel_installer.app_name') }}</h3>
-                <p class="text-muted small">Setup Wizard</p>
+<body class="min-h-screen flex items-center justify-center p-4 selection:bg-indigo-100 italic-none">
+    <!-- Animated Blobs -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none -z-10 blur-3xl opacity-60">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-indigo-200 rounded-full animate-blob"></div>
+        <div class="absolute top-1/2 -right-24 w-96 h-96 bg-purple-200 rounded-full animate-blob animation-delay-2000" style="animation-delay: 2s"></div>
+        <div class="absolute -bottom-24 left-1/4 w-96 h-96 bg-emerald-100 rounded-full animate-blob animation-delay-4000" style="animation-delay: 4s"></div>
+    </div>
+
+    <div class="w-full max-w-[480px] animate-entrance">
+        <div class="glass rounded-[40px] overflow-hidden relative">
+            <!-- Sleek Top Progress -->
+            @php
+                $progress = 20;
+                if(request()->routeIs('installer.database')) $progress = 40;
+                elseif(request()->routeIs('installer.license')) $progress = 60;
+                elseif(request()->routeIs('installer.install')) $progress = 80;
+                elseif(request()->routeIs('installer.complete')) $progress = 100;
+            @endphp
+            <div class="absolute top-0 left-0 w-full h-1 bg-black/5 overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-700 ease-in-out" style="width: {{ $progress }}%"></div>
             </div>
-            <div class="installer-body"><div class="step-indicator">
-                    <div class="step-dot {{ request()->routeIs('installer.requirements') ? 'active' : (request()->routeIs('installer.database') || request()->routeIs('installer.license') || request()->routeIs('installer.install') || request()->routeIs('installer.complete') ? 'completed' : '') }}"></div>
-                    <div class="step-dot {{ request()->routeIs('installer.database') ? 'active' : (request()->routeIs('installer.license') || request()->routeIs('installer.install') || request()->routeIs('installer.complete') ? 'completed' : '') }}"></div>
-                    @if(config('laravel_installer.license_check', 'required') !== 'disabled')
-                        <div class="step-dot {{ request()->routeIs('installer.license') ? 'active' : (request()->routeIs('installer.install') || request()->routeIs('installer.complete') ? 'completed' : '') }}"></div>
-                    @endif
-                    <div class="step-dot {{ request()->routeIs('installer.install') ? 'active' : (request()->routeIs('installer.complete') ? 'completed' : '') }}"></div>
-                    <div class="step-dot {{ request()->routeIs('installer.complete') ? 'active' : '' }}"></div>
+
+            <div class="pt-12 px-10 pb-4 text-center">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-3xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-xl shadow-indigo-200 mb-6 text-white text-4xl relative group">
+                    <i class="bi bi-rocket-takeoff group-hover:scale-110 transition-transform duration-500"></i>
+                    <div class="absolute inset-0 rounded-inherit bg-inherit filter blur-xl opacity-40 -z-10 scale-90 translate-y-3"></div>
                 </div>
+                <h2 class="text-3xl font-[800] tracking-tight text-slate-900 mb-1">
+                    {{ config('laravel_installer.app_name', 'Laravel') }}
+                </h2>
+                <p class="text-slate-500 font-medium text-sm">Setup Wizard</p>
+            </div>
+            
+            <div class="px-10 pb-12">
                 @yield('content')
             </div>
         </div>
+        
+        <div class="mt-8 text-center">
+            <p class="text-slate-400 text-[10px] font-bold tracking-[0.2em] flex items-center justify-center gap-2 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                <span class="w-8 h-[1px] bg-slate-200"></span>
+                SECURE INSTALLATION
+                <span class="w-8 h-[1px] bg-slate-200"></span>
+            </p>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @stack('scripts')
 </body>
 </html>

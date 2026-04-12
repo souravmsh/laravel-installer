@@ -3,43 +3,53 @@
 @section('title', 'Installation Complete')
 
 @section('content')
-<div class="text-center">
-    <div class="mb-4">
-        <div class="mx-auto bg-success bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center" style="width: 90px; height: 90px;">
-            <i class="bi bi-patch-check-fill text-success" style="font-size: 48px;"></i>
+<div class="text-center animate-entrance">
+    <div class="mb-8">
+        <div class="mx-auto w-24 h-24 bg-emerald-100 rounded-[32px] flex items-center justify-center text-emerald-600 shadow-xl shadow-emerald-100 relative mb-6">
+            <i class="bi bi-patch-check-fill text-[3rem]"></i>
+            <div class="absolute inset-0 rounded-inherit bg-inherit filter blur-xl opacity-50 -z-10 scale-90 translate-y-3"></div>
         </div>
+        <h4 class="text-3xl font-800 text-slate-900 mb-2 tracking-tight">Installation Complete!</h4>
+        <p class="text-slate-500 font-medium text-sm">Your application has been successfully configured and is ready for use.</p>
     </div>
-    
-    <h4 class="fw-bold mb-2">Installed!</h4>
-    <p class="text-muted small mb-4">Your application is ready to use.</p>
 
-    <div class="bg-white bg-opacity-40 p-4 rounded-4 border border-white mb-4 shadow-sm">
-        <label class="small fw-bold text-muted text-uppercase mb-3 d-block tracking-wider" style="font-size: 0.7rem;">Admin Credentials</label>
-        <div class="text-start">
-            <div class="bg-white bg-opacity-50 p-3 rounded-3 mb-2 d-flex justify-content-between align-items-center border">
-                <span class="small text-muted fw-medium">Email</span>
-                <code class="small fw-bold text-primary">superadmin@codekernel.net</code>
+    <div class="bg-white/40 border border-white/20 p-6 rounded-3xl mb-6 shadow-sm text-left backdrop-blur-md relative overflow-hidden group hover:bg-white/50 transition-colors">
+        <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Default Admin Credentials</label>
+        
+        <div class="space-y-3 relative z-10">
+            <div class="bg-white/80 border border-slate-100 p-4 rounded-2xl flex justify-between items-center group-hover:shadow-sm transition-shadow">
+                <span class="text-xs font-semibold text-slate-500 flex items-center gap-2">
+                    <i class="bi bi-envelope text-indigo-400"></i>
+                    Email
+                </span>
+                <code class="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg">superadmin@codekernel.net</code>
             </div>
-            <div class="bg-white bg-opacity-50 p-3 rounded-3 mb-3 d-flex justify-content-between align-items-center border">
-                <span class="small text-muted fw-medium">Password</span>
-                <code class="small fw-bold text-primary">12345678</code>
+            <div class="bg-white/80 border border-slate-100 p-4 rounded-2xl flex justify-between items-center group-hover:shadow-sm transition-shadow">
+                <span class="text-xs font-semibold text-slate-500 flex items-center gap-2">
+                    <i class="bi bi-key text-indigo-400"></i>
+                    Password
+                </span>
+                <code class="text-sm font-bold text-indigo-600 bg-indigo-50 px-3 py-1.5 rounded-lg">12345678</code>
             </div>
         </div>
-        <div class="alert alert-warning py-2 px-3 mb-0 text-start" style="background: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.2); color: #92400e;">
-            <i class="bi bi-shield-lock-fill me-2"></i>
-            <small class="fw-medium">Please change this immediately.</small>
+        
+        <div class="mt-4 bg-amber-50/80 border border-amber-100 p-3 rounded-xl flex items-center gap-2 relative z-10">
+            <i class="bi bi-exclamation-triangle-fill text-amber-500"></i>
+            <span class="text-xs font-bold text-amber-700 uppercase tracking-widest">For your security, please change this immediately after login.</span>
         </div>
     </div>
 
-    <div class="alert alert-info py-3 px-4 mb-4 text-start" style="background: rgba(99, 102, 241, 0.05); border: 1px dashed rgba(99, 102, 241, 0.2); color: #4338ca;">
-        <div class="d-flex align-items-center">
-            <i class="bi bi-lock-fill me-2"></i>
-            <small class="fw-medium">The installer has been locked for security.</small>
+    <div class="bg-indigo-50/50 border border-indigo-100/50 p-4 rounded-2xl flex items-start gap-3 mb-8 text-left">
+        <i class="bi bi-lock-fill text-indigo-500 text-lg mt-0.5"></i>
+        <div>
+            <p class="text-sm font-bold text-indigo-800 mb-0.5">Installer Locked</p>
+            <p class="text-[11px] font-medium text-indigo-600 leading-relaxed">The setup wizard has been securely locked. To reinstall, you must delete the `.installed` flag manually.</p>
         </div>
     </div>
 
-    <a href="/" class="btn btn-installer">
-        Go to Dashboard <i class="bi bi-arrow-right ms-1"></i>
+    <a href="{{ url('/') }}" class="btn-premium w-full py-4.5 rounded-2xl text-white font-bold flex items-center justify-center gap-2 shadow-xl shadow-indigo-200 group text-lg">
+        <span>Go to Dashboard</span>
+        <i class="bi bi-arrow-right-circle-fill text-xl transition-transform group-hover:translate-x-1"></i>
     </a>
 </div>
 @endsection
