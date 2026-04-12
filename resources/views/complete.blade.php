@@ -1,54 +1,49 @@
 @extends('installer::layout')
 
 @section('title', 'Setup Complete')
-@section('subtitle', 'Your application is securely installed and ready.')
+@section('subtitle', 'Your application is ready to use.')
 
 @section('content')
 
-<div class="py-4">
-    <div class="bg-brand-50 border border-brand-200 rounded-md p-4 mb-6">
-        <div class="flex">
-            <div class="flex-shrink-0">
-                <i class="bi bi-info-circle-fill text-brand-400"></i>
-            </div>
-            <div class="ml-3">
-                <h3 class="text-sm font-medium text-brand-800">Installer Locked</h3>
-                <div class="mt-2 text-sm text-brand-700">
-                    <p>The installer wizard has been disabled. To run it again, delete the <code>.installed</code> file located in your storage directory.</p>
-                </div>
-            </div>
-        </div>
+<div class="text-center py-4 mb-4">
+    <div class="d-inline-flex justify-content-center align-items-center bg-success text-white rounded-circle mb-3 shadow-sm" style="width: 70px; height: 70px;">
+        <i class="bi bi-rocket-takeoff" style="font-size: 32px;"></i>
     </div>
+    <h3 class="fw-bold text-dark">You're All Set!</h3>
+    <p class="text-muted mx-auto" style="max-width: 400px;">
+        {{ config('laravel_installer.app_name', 'System') }} has been installed and configured successfully. You may now log in to the administrator portal.
+    </p>
+</div>
 
-    <div>
-        <h4 class="text-sm font-semibold text-slate-900 mb-3 border-b border-slate-200 pb-2">Default Administrator</h4>
-        
-        <div class="bg-white border border-slate-200 rounded-md overflow-hidden">
-            <dl class="divide-y divide-slate-200">
-                <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-slate-500">Email address</dt>
-                    <dd class="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2 font-mono">superadmin@codekernel.net</dd>
-                </div>
-                <div class="px-4 py-4 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-slate-500">Password</dt>
-                    <dd class="mt-1 text-sm text-slate-900 sm:mt-0 sm:col-span-2 font-mono">12345678</dd>
-                </div>
-            </dl>
-        </div>
-        
-        <p class="mt-3 text-xs text-red-600 font-medium">
-            <i class="bi bi-shield-exclamation text-red-500 mr-1"></i>
-            Please change this password immediately upon logging in!
-        </p>
+<div class="card bg-light border">
+    <div class="card-header bg-transparent border-bottom-0 pt-3 pb-0">
+        <h6 class="mb-0 fw-bold text-secondary text-uppercase small">
+            <i class="bi bi-person-badge me-1"></i> Admin Credentials
+        </h6>
+    </div>
+    <div class="card-body">
+        <dl class="row mb-0">
+            <dt class="col-sm-4 text-muted fw-normal small">Email Address</dt>
+            <dd class="col-sm-8 fw-medium text-dark mb-2">admin@admin.com</dd>
+
+            <dt class="col-sm-4 text-muted fw-normal small">Password</dt>
+            <dd class="col-sm-8 fw-medium text-dark mb-0">password</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="alert alert-warning border border-warning border-opacity-25 mt-4 d-flex" role="alert">
+    <i class="bi bi-shield-exclamation fs-5 me-3 text-warning"></i>
+    <div class="small text-dark">
+        <strong>Security Warning:</strong> Please copy these credentials now and change your password immediately upon first login.
     </div>
 </div>
 
 @endsection
 
 @section('footer')
-    <div></div>
-    
-    <a href="{{ url('/') }}" class="btn-primary">
-        Go to Login <i class="bi bi-box-arrow-in-right ml-2 text-xs"></i>
+    <div></div> <!-- Spacer -->
+    <a href="{{ url('/') }}" class="btn btn-primary px-4 fw-medium">
+        Go to Application <i class="bi bi-box-arrow-up-right ms-1 small"></i>
     </a>
 @endsection

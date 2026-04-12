@@ -15,3 +15,23 @@ Route::prefix('install')->middleware(['web', 'installer.redirect'])->name('insta
     Route::post('/install/process', [InstallerController::class, 'processInstall'])->name('install.process');
     Route::get('/complete', [InstallerController::class, 'complete'])->name('complete');
 });
+
+Route::get('installer-assets/{path}', function ($path) {
+    if (!preg_match('/^[a-zA-Z0-9_\-\.\/]+$/', $path)) {
+        abort(404);
+    }
+    
+    $file = __DIR__ . '/../../public/assets/' . $path;
+    if (!file_exists($file)) {
+        abort(404);
+    }
+    
+    $mime = match (pathinfo($file, PATHINFO_EXTENSION)) {
+        'css' => 'text/css',
+        'js' => 'application/javascript',
+        'woff', 'woff2' => 'font/woff2',
+        default => 'text/plain',
+    };
+    
+    return response()->file($file, ['Content-Type' => $mime]);
+})->where('path', '.*')->name('installer.asset');

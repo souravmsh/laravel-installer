@@ -7,64 +7,27 @@
     <title>@yield('title', 'Installer') - {{ config('laravel_installer.app_name', 'System Setup') }}</title>
     
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url('installer-assets/fonts/Inter.woff2') }}" rel="preload" as="font" type="font/woff2" crossorigin>
+    <style>
+        @font-face {
+          font-family: 'Inter';
+          font-style: normal;
+          font-weight: 100 900;
+          font-display: swap;
+          src: url('{{ url('installer-assets/fonts/Inter.woff2') }}') format('woff2');
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+    </style>
     
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url('installer-assets/icons/bootstrap-icons.css') }}">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url('installer-assets/css/bootstrap.min.css') }}">
     
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .scrollbar-hide::-webkit-scrollbar {
-                display: none;
-            }
-            .scrollbar-hide {
-                -ms-overflow-style: none;
-                scrollbar-width: none;
-            }
-        }
-        
-        /* Standard generic form styling */
-        .form-input {
-            @apply w-full px-3 py-2 border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-brand-500 focus:border-brand-500 sm:text-sm transition-colors;
-        }
-        .form-label {
-            @apply block text-sm font-medium text-slate-700 mb-1;
-        }
-        .btn-primary {
-            @apply inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-brand-600 hover:bg-brand-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
-        }
-        .btn-secondary {
-            @apply inline-flex justify-center items-center px-4 py-2 border border-slate-300 text-sm font-medium rounded-md shadow-sm text-slate-700 bg-white hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500 transition-colors;
-        }
-    </style>
     @stack('styles')
 </head>
-<body class="min-h-screen bg-slate-100 flex items-center justify-center p-4 font-sans text-slate-800 antialiased selection:bg-brand-100 selection:text-brand-700">
+<body class="d-flex align-items-center justify-content-center min-vh-100 py-4">
     
     @php
         $steps = [
@@ -88,22 +51,21 @@
     @endphp
 
     <!-- Wizard Container -->
-    <div class="w-full max-w-4xl bg-white shadow-xl rounded-lg border border-slate-200 flex flex-col md:flex-row overflow-hidden min-h-[550px]">
-        
-        <!-- Sidebar (Steps Track) -->
-        <div class="w-full md:w-64 bg-slate-50 border-r border-slate-200 p-6 flex flex-col flex-shrink-0">
-            <div class="mb-8 flex items-center gap-3">
-                <div class="w-8 h-8 rounded bg-brand-600 text-white flex items-center justify-center shrink-0">
-                    <i class="bi bi-box-seam-fill"></i>
+    <div class="card shadow-lg border-0 overflow-hidden" style="max-width: 900px; width: 100%; min-height: 550px;">
+        <div class="row g-0 h-100">
+            <!-- Sidebar (Steps Track) -->
+            <div class="col-md-4 bg-light border-end p-4 d-flex flex-column h-100">
+                <div class="d-flex align-items-center gap-2 mb-4">
+                    <div class="bg-primary text-white rounded d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                        <i class="bi bi-box-seam-fill"></i>
+                    </div>
+                    <h5 class="mb-0 fw-bold">
+                        {{ config('laravel_installer.app_name', 'System Setup') }}
+                    </h5>
                 </div>
-                <h1 class="text-sm font-bold text-slate-900 leading-tight">
-                    {{ config('laravel_installer.app_name', 'System Setup') }}
-                </h1>
-            </div>
 
-            <div class="flex-1">
-                <nav aria-label="Progress">
-                    <ol role="list" class="overflow-hidden">
+                <div class="flex-grow-1 mt-3">
+                    <ul class="list-unstyled position-relative">
                         @foreach($steps as $index => $step)
                             @php
                                 $isCompleted = $index < $currentStepIndex;
@@ -111,62 +73,56 @@
                                 $isLast = $index === count($steps) - 1;
                             @endphp
                             
-                            <li class="relative {{ !$isLast ? 'pb-8' : '' }}">
+                            <li class="position-relative {{ !$isLast ? 'pb-4' : '' }}">
                                 @if(!$isLast)
-                                    <div class="absolute left-3 top-4 -ml-px mt-0.5 h-full w-0.5 {{ $isCompleted ? 'bg-brand-600' : 'bg-slate-200' }}" aria-hidden="true"></div>
+                                    <div class="position-absolute" style="left: 11px; top: 24px; bottom: 0; width: 2px; background-color: {{ $isCompleted ? '#0d6efd' : '#dee2e6' }};"></div>
                                 @endif
 
-                                <div class="relative flex items-center group">
-                                    <span class="h-9 flex items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-center justify-content-center bg-white rounded-circle position-relative" style="z-index: 1; width: 24px; height: 24px; border: 2px solid {{ $isActive || $isCompleted ? '#0d6efd' : '#dee2e6' }}; {{ $isCompleted ? 'background-color: #0d6efd !important;' : '' }}">
                                         @if($isCompleted)
-                                            <span class="relative z-10 w-6 h-6 flex items-center justify-center bg-brand-600 rounded-full">
-                                                <i class="bi bi-check text-white text-xs"></i>
-                                            </span>
+                                            <i class="bi bi-check text-white" style="font-size: 14px;"></i>
                                         @elseif($isActive)
-                                            <span class="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 border-brand-600 rounded-full">
-                                                <span class="h-2 w-2 bg-brand-600 rounded-full"></span>
-                                            </span>
-                                        @else
-                                            <span class="relative z-10 w-6 h-6 flex items-center justify-center bg-white border-2 border-slate-300 rounded-full"></span>
+                                            <div class="rounded-circle bg-primary" style="width: 8px; height: 8px;"></div>
                                         @endif
-                                    </span>
-                                    <span class="ml-3 flex flex-col min-w-0">
-                                        <span class="text-sm font-medium {{ $isActive ? 'text-brand-600' : ($isCompleted ? 'text-slate-900' : 'text-slate-500') }}">{{ $step['name'] }}</span>
-                                    </span>
+                                    </div>
+                                    <span class="ms-3 fw-medium {{ $isActive ? 'text-primary' : ($isCompleted ? 'text-dark' : 'text-muted') }}">{{ $step['name'] }}</span>
                                 </div>
                             </li>
                         @endforeach
-                    </ol>
-                </nav>
-            </div>
-            
-            <div class="mt-8 pt-4 border-t border-slate-200">
-                <p class="text-xs text-slate-400">Setup Wizard v1.0</p>
-            </div>
-        </div>
-
-        <!-- Content Area -->
-        <div class="flex-1 flex flex-col min-w-0 bg-white">
-            <!-- Header -->
-            <div class="px-8 py-6 border-b border-slate-100 flex-shrink-0">
-                <h2 class="text-xl font-semibold text-slate-800">@yield('title')</h2>
-                <p class="text-sm text-slate-500 mt-1">@yield('subtitle', 'Follow the steps to configure your system.')</p>
-            </div>
-
-            <!-- Scrollable Content -->
-            <div class="flex-1 p-8 overflow-y-auto scrollbar-hide">
-                @yield('content')
-            </div>
-
-            <!-- Footer Action Bar -->
-            @hasSection('footer')
-                <div class="px-8 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between flex-shrink-0">
-                    @yield('footer')
+                    </ul>
                 </div>
-            @endif
+                
+                <div class="mt-4 pt-3 border-top">
+                    <small class="text-muted">Setup Wizard v1.0</small>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="col-md-8 d-flex flex-column h-100 bg-white">
+                <!-- Header -->
+                <div class="px-4 py-3 border-bottom">
+                    <h4 class="mb-1 fw-semibold">@yield('title')</h4>
+                    <p class="text-muted small mb-0">@yield('subtitle', 'Follow the steps to configure your system.')</p>
+                </div>
+
+                <!-- Scrollable Content -->
+                <div class="flex-grow-1 p-4" style="overflow-y: auto;">
+                    @yield('content')
+                </div>
+
+                <!-- Footer Action Bar -->
+                @hasSection('footer')
+                    <div class="px-4 py-3 bg-light border-top d-flex justify-content-between align-items-center">
+                        @yield('footer')
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="{{ url('installer-assets/js/bootstrap.bundle.min.js') }}"></script>
     @stack('scripts')
 </body>
 </html>
