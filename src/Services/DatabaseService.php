@@ -39,6 +39,11 @@ class DatabaseService
     public function createDatabase(array $config): bool
     {
         try {
+            // Validate database name to prevent SQL injection
+            if (!preg_match('/^[a-zA-Z0-9_]+$/', $config['database'])) {
+                return false;
+            }
+
             // Connect without database name
             $connection = new \PDO(
                 "mysql:host={$config['host']};port={$config['port']}",
@@ -97,12 +102,11 @@ class DatabaseService
     public function runMigrations(): bool|string
     {
         try {
-            Artisan::call('migrate', ['--force' => true]);
+            $exitCode = Artisan::call('migrate', ['--force' => true]);
             
             // Check if there were any errors
-            $output = Artisan::output();
-            if (str_contains($output, 'error') || str_contains($output, 'failed')) {
-                return $output;
+            if ($exitCode !== 0) {
+                return Artisan::output();
             }
             
             return true;
@@ -117,12 +121,11 @@ class DatabaseService
     public function runSeeders(): bool|string
     {
         try {
-            Artisan::call('db:seed', ['--force' => true]);
+            $exitCode = Artisan::call('db:seed', ['--force' => true]);
             
             // Check if there were any errors
-            $output = Artisan::output();
-            if (str_contains($output, 'error') || str_contains($output, 'failed')) {
-                return $output;
+            if ($exitCode !== 0) {
+                return Artisan::output();
             }
             
             return true;

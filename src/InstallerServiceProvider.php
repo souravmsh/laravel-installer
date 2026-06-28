@@ -16,13 +16,6 @@ class InstallerServiceProvider extends ServiceProvider
             __DIR__.'/../config/laravel_installer.php', 'laravel_installer'
         );
 
-        // Check if installer is enabled and app is not installed
-        // We use raw file_exists and storage_path to avoid any DB triggers
-        $installLockFile = storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install'));
-        if (config('laravel_installer.installer_enabled', true) && !file_exists($installLockFile)) {
-            $this->overrideDatabaseConfigs();
-        }
-
         // Register services
         $this->app->singleton('installer.database', function ($app) {
             return new Services\DatabaseService();
@@ -38,6 +31,13 @@ class InstallerServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Check if installer is enabled and app is not installed
+        // We use raw file_exists and storage_path to avoid any DB triggers
+        $installLockFile = storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install'));
+        if (config('laravel_installer.installer_enabled', true) && !file_exists($installLockFile)) {
+            $this->overrideDatabaseConfigs();
+        }
+
         // Load routes
         $this->loadRoutesFrom(__DIR__.'/routes/web.php');
 

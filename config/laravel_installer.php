@@ -63,7 +63,21 @@ return [
     | These credentials will be used to create the initial administrator
     | account if it does not already exist after the database is set up.
     |
+    | WARNING: Never leave admin_password without a value set in your .env file.
+    |
     */
     'admin_email' => env('INSTALLER_ADMIN_EMAIL', 'superadmin@codekernel.net'),
     'admin_password' => env('INSTALLER_ADMIN_PASSWORD', '12345678'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Admin Table
+    |--------------------------------------------------------------------------
+    |
+    | The database table that holds administrator/user accounts. Change this
+    | if your application uses a custom table name (e.g. 'admins', 'members').
+    |
+    */
+    'admin_table' => env('INSTALLER_ADMIN_TABLE', 'users'),
 ];
+

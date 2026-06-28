@@ -31,7 +31,7 @@
     
     @php
         $steps = [
-            ['route' => 'installer.requirements', 'name' => 'Requirements'],
+            ['route' => 'installer.welcome', 'name' => 'Requirements'],
             ['route' => 'installer.database', 'name' => 'Database'],
         ];
 

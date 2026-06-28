@@ -119,8 +119,9 @@ class InstallerController extends Controller
         $config = $request->only(['host', 'port', 'database', 'username', 'password']);
 
         // Test connection first
-        if (!$this->databaseService->testConnection($config)) {
-            return back()->withErrors(['database' => 'Database connection failed.']);
+        $connectionResult = $this->databaseService->testConnection($config);
+        if ($connectionResult !== true) {
+            return back()->withErrors(['database' => 'Database connection failed' . (is_string($connectionResult) ? " ($connectionResult)" : '') . '.']);
         }
 
         // Update .env file
@@ -155,7 +156,7 @@ class InstallerController extends Controller
         $this->ensureAdminUser();
 
         // Check if license check is enabled
-        if (config('laravel_installer.license_check', 'required') === 'disabled') {
+        if (config('laravel_installer.license_check', 'optional') === 'disabled') {
             return redirect()->route('installer.install')->with('success', 'Database configured successfully!');
         }
 
@@ -168,7 +169,7 @@ class InstallerController extends Controller
     public function license()
     {
         // Check if license check is enabled
-        if (config('laravel_installer.license_check', 'required') === 'disabled') {
+        if (config('laravel_installer.license_check', 'optional') === 'disabled') {
             return redirect()->route('installer.install');
         }
 
@@ -222,7 +223,7 @@ class InstallerController extends Controller
     {
         try {
             // Store license information if enabled
-            if (config('laravel_installer.license_check', 'required') !== 'disabled' && session()->has('license_key')) {
+            if (config('laravel_installer.license_check', 'optional') !== 'disabled' && session()->has('license_key')) {
                 $this->licenseService->storeLicense(
                     session('license_name'),
                     session('license_email'),
@@ -327,10 +328,11 @@ class InstallerController extends Controller
     {
         try {
             $adminEmail = config('laravel_installer.admin_email', 'admin@admin.com');
-            $exists = \Illuminate\Support\Facades\DB::table('users')->where('email', $adminEmail)->exists();
+            $adminTable = config('laravel_installer.admin_table', 'users');
+            $exists = \Illuminate\Support\Facades\DB::table($adminTable)->where('email', $adminEmail)->exists();
             
             if (!$exists) {
-                \Illuminate\Support\Facades\DB::table('users')->insert([
+                \Illuminate\Support\Facades\DB::table($adminTable)->insert([
                     'name' => 'Administrator',
                     'email' => $adminEmail,
                     'password' => \Illuminate\Support\Facades\Hash::make(config('laravel_installer.admin_password', 'password')),
