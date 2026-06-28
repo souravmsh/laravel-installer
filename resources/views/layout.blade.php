@@ -94,7 +94,7 @@
                 </div>
                 
                 <div class="mt-4 pt-3 border-top">
-                    <small class="text-muted">Setup Wizard v1.0</small>
+                    <small class="text-muted">Setup Wizard v1.3.0</small>
                 </div>
             </div>
 

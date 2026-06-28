@@ -31,6 +31,12 @@ class InstallerServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                Console\Commands\InstallerFreshCommand::class,
+            ]);
+        }
+
         // Check if installer is enabled and app is not installed
         // We use raw file_exists and storage_path to avoid any DB triggers
         $installLockFile = storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install'));

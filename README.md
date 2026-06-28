@@ -88,6 +88,14 @@ Once installed, navigate to `/install` to begin the installation process. The in
 6.  License Validation
 7.  Installation Completion
 
+### Commands
+
+If you ever need to reset the installation and run the setup wizard again, you can use the fresh command. This command safely clears all application caches and removes the installation lock file (while preserving your license key). It includes a confirmation prompt to prevent accidental resets.
+
+```bash
+php artisan laravel-installer:fresh
+```
+
 ## Security
 
 If you discover any security-related issues, please email sourav.diubd@gmail.com instead of using the issue tracker.
