@@ -10,6 +10,8 @@ class CheckInstalled
 {
     /**
      * Handle an incoming request.
+     *
+     * Redirects to the installer when the installation lock file is missing.
      */
     public function handle(Request $request, Closure $next)
     {
@@ -27,3 +29,4 @@ class CheckInstalled
         return $next($request);
     }
 }
+

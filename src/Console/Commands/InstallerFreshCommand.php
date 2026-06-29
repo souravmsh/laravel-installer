@@ -13,7 +13,7 @@ class InstallerFreshCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'laravel-installer:fresh';
+    protected $signature = 'laravel-installer:reset';
 
     /**
      * The console command description.
@@ -29,33 +29,122 @@ class InstallerFreshCommand extends Command
     {
         $this->warn('WARNING: You are about to remove the installation flag and clear all application caches.');
         $this->warn('This will force the application back into setup mode.');
-        
+
         if (!$this->confirm('Are you sure you want to refresh the installer setup?')) {
             $this->info('Setup refresh cancelled.');
             return Command::SUCCESS;
         }
 
-        $this->info('Clearing application caches...');
-        
-        // Clear caches
-        Artisan::call('cache:clear');
-        Artisan::call('config:clear');
-        Artisan::call('route:clear');
-        Artisan::call('view:clear');
-        $this->info('Caches cleared successfully.');
+        // ── Step 1: Fix write permissions ─────────────────────────────────────
+        $this->info('');
+        $this->info('[ Step 1 ] Fixing file & directory permissions...');
+        $this->fixPermissions();
 
-        // Remove installed flag
-        $installLockFile = storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install'));
-        
-        if (File::exists($installLockFile)) {
-            File::delete($installLockFile);
-            $this->info('Installation flag removed successfully.');
-        } else {
-            $this->info('Installation flag not found. The app may already be in setup mode.');
+        // ── Step 2: Resolve lock file path BEFORE clearing caches ────────────
+        // Read config now so that any subsequent cache clears don't affect the path.
+        $installLockFile = storage_path(
+            config('laravel_installer.installed_key_path', 'app/private/key.install')
+        );
+        $licenseLockFile = storage_path(
+            config('laravel_installer.license_storage_path', 'app/private/key.private')
+        );
+
+        $this->info('');
+        $this->info('[ Step 2 ] Removing installation flags...');
+        $this->line("  Install lock : <comment>{$installLockFile}</comment>");
+        $this->line("  License lock : <comment>{$licenseLockFile}</comment>");
+
+        foreach ([$installLockFile, $licenseLockFile] as $lockFile) {
+            if (File::exists($lockFile)) {
+                File::delete($lockFile);
+                $this->info('  ✓ Removed: ' . basename($lockFile));
+            }
         }
 
-        $this->info('The installer has been refreshed. You can now revisit the setup wizard.');
-        
+        // ── Step 3: Clear ALL caches (including bootstrap/cache/config.php) ───
+        $this->info('');
+        $this->info('[ Step 3 ] Clearing all application caches...');
+        Artisan::call('optimize:clear');
+        $this->info('  ✓ All caches cleared.');
+
+        // ── Final check ───────────────────────────────────────────────────────
+        if (!config('laravel_installer.installer_enabled', true)) {
+            $this->warn('');
+            $this->warn('⚠  INSTALLER_ENABLED is set to false in your .env file.');
+            $this->warn('   Set INSTALLER_ENABLED=true in .env to re-enable setup mode.');
+        }
+
+        $this->info('');
+        $this->info('✓ Installer reset complete. Visit your application to start the setup wizard.');
+
         return Command::SUCCESS;
     }
+
+    /**
+     * Fix write permissions on files and directories the installer needs to write.
+     */
+    protected function fixPermissions(): void
+    {
+        $envPath     = base_path('.env');
+        $storagePath = storage_path();
+        $bootstrapCachePath = base_path('bootstrap/cache');
+        $privateDir  = storage_path('app/private');
+
+        $targets = [
+            ['path' => $envPath,            'isDir' => false, 'mode' => 0664, 'label' => '.env'],
+            ['path' => $storagePath,        'isDir' => true,  'mode' => 0775, 'label' => 'storage/'],
+            ['path' => $bootstrapCachePath, 'isDir' => true,  'mode' => 0775, 'label' => 'bootstrap/cache/'],
+            ['path' => $privateDir,         'isDir' => true,  'mode' => 0775, 'label' => 'storage/app/private/'],
+        ];
+
+        foreach ($targets as $target) {
+            $path = $target['path'];
+
+            // Ensure directories exist before chmodding
+            if ($target['isDir'] && !File::exists($path)) {
+                File::makeDirectory($path, 0775, true, true);
+                $this->line("  ✓ Created  : {$target['label']}");
+                continue;
+            }
+
+            if (!file_exists($path)) {
+                $this->warn("  ⚠ Missing  : {$target['label']} (skipped)");
+                continue;
+            }
+
+            if ($target['isDir']) {
+                // chmod the directory itself and all its contents recursively
+                $result = $this->chmodRecursive($path, $target['mode']);
+            } else {
+                $result = @chmod($path, $target['mode']);
+            }
+
+            if ($result) {
+                $this->info("  ✓ chmod " . decoct($target['mode']) . " : {$target['label']}");
+            } else {
+                $this->warn("  ⚠ Failed   : {$target['label']} (check ownership — try running as root or www-data)");
+            }
+        }
+    }
+
+    /**
+     * Recursively chmod a directory and all its contents.
+     */
+    protected function chmodRecursive(string $path, int $mode): bool
+    {
+        $success = @chmod($path, $mode);
+
+        if (is_dir($path)) {
+            foreach (new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::SELF_FIRST
+            ) as $item) {
+                $itemMode = $item->isDir() ? $mode : ($mode & 0664); // files: strip execute bit
+                @chmod($item->getPathname(), $itemMode);
+            }
+        }
+
+        return $success;
+    }
+
 }

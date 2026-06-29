@@ -90,11 +90,25 @@ Once installed, navigate to `/install` to begin the installation process. The in
 
 ### Commands
 
-If you ever need to reset the installation and run the setup wizard again, you can use the fresh command. This command safely clears all application caches and removes the installation lock file (while preserving your license key). It includes a confirmation prompt to prevent accidental resets.
+#### Reset / Fresh Install
+
+Use this command to tear down the current installation and return the application to setup mode. It is safe to run at any time — it includes a confirmation prompt to prevent accidental resets.
 
 ```bash
-php artisan laravel-installer:fresh
+php artisan laravel-installer:reset
 ```
+
+The command runs three sequential steps:
+
+| Step | Action |
+|------|--------|
+| **1. Fix permissions** | Sets write permissions on `.env` (664), `storage/` (775 recursive), `bootstrap/cache/` (775), and `storage/app/private/` (775). Creates missing directories automatically. |
+| **2. Remove lock files** | Deletes the install lock file (`key.install`) **and** the license key file (`key.private`) if they exist. Prints the resolved path of each so you can verify. |
+| **3. Clear all caches** | Runs `optimize:clear` which flushes config, route, view, event, and compiled bootstrap caches — including `bootstrap/cache/config.php` that individual `cache:clear` calls miss. |
+
+After the command completes, the `installer.check` middleware will detect the missing lock file and redirect all protected routes to the setup wizard.
+
+> **Note:** If `INSTALLER_ENABLED=false` is set in your `.env`, the middleware bypasses the lock-file check entirely. The command will warn you if this is the case — set `INSTALLER_ENABLED=true` to re-enable setup mode.
 
 ## Security
 

@@ -1,6 +1,7 @@
 {
     "name": "souravmsh/laravel-installer",
     "description": "A sleek and easy-to-use web-based installer for Laravel applications.",
+    "version": "1.4.0",
     "type": "library",
     "license": "proprietary",
     "keywords": [
