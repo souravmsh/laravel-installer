@@ -524,7 +524,15 @@
             @endforeach
         </ul>
 
-        <div class="sidebar-footer">Setup Wizard v1.3</div>
+        <div class="sidebar-footer">
+            <div>Installation Wizard v{{ config('laravel_installer.app_version', '1.0.0') }}</div>
+            <div style="margin-top:4px;font-size:.64rem;opacity:.75;">
+                Powered by
+                <a href="https://codekernel.net" target="_blank" style="color:#9ca3b0;text-decoration:none;">
+                    CodeKernel
+                </a>
+            </div>
+        </div>                        
     </aside>
 
     {{-- Content --}}
