@@ -276,47 +276,65 @@ class InstallerController extends Controller
 
         return [
             'php_version' => [
-                'name' => 'PHP Version >= 8.1',
-                'status' => version_compare(PHP_VERSION, '8.1.0', '>='),
-                'current' => PHP_VERSION
+                'name'    => 'PHP Version >= 8.1',
+                'status'  => version_compare(PHP_VERSION, '8.1.0', '>='),
+                'current' => PHP_VERSION,
+                'group'   => 'requirements',
             ],
             'pdo' => [
-                'name' => 'PDO Extension',
+                'name'   => 'PDO Extension',
                 'status' => extension_loaded('pdo'),
+                'group'  => 'requirements',
             ],
             'mbstring' => [
-                'name' => 'Mbstring Extension',
+                'name'   => 'Mbstring Extension',
                 'status' => extension_loaded('mbstring'),
+                'group'  => 'requirements',
             ],
             'openssl' => [
-                'name' => 'OpenSSL Extension',
+                'name'   => 'OpenSSL Extension',
                 'status' => extension_loaded('openssl'),
+                'group'  => 'requirements',
             ],
             'tokenizer' => [
-                'name' => 'Tokenizer Extension',
+                'name'   => 'Tokenizer Extension',
                 'status' => extension_loaded('tokenizer'),
+                'group'  => 'requirements',
             ],
             'xml' => [
-                'name' => 'XML Extension',
+                'name'   => 'XML Extension',
                 'status' => extension_loaded('xml'),
+                'group'  => 'requirements',
             ],
             'ctype' => [
-                'name' => 'Ctype Extension',
+                'name'   => 'Ctype Extension',
                 'status' => extension_loaded('ctype'),
+                'group'  => 'requirements',
             ],
             'json' => [
-                'name' => 'JSON Extension',
+                'name'   => 'JSON Extension',
                 'status' => extension_loaded('json'),
+                'group'  => 'requirements',
             ],
             'storage_writable' => [
-                'name' => 'Storage Directory Writable',
+                'name'   => 'Storage Directory Writable',
                 'status' => is_writable(storage_path()),
+                'current' => storage_path(),
+                'group'  => 'permissions',
+            ],
+            'bootstrap_cache_writable' => [
+                'name'   => 'Bootstrap Cache Writable',
+                'status' => is_writable(base_path('bootstrap/cache')),
+                'current' => 'bootstrap/cache',
+                'group'  => 'permissions',
             ],
             'env_writable' => [
-                'name' => '.env File Writable',
-                'status' => file_exists(app()->environmentFilePath()) 
-                            ? is_writable(app()->environmentFilePath()) 
-                            : is_writable(dirname(app()->environmentFilePath())),
+                'name'   => '.env File Writable',
+                'status' => file_exists(base_path('.env'))
+                            ? is_writable(base_path('.env'))
+                            : is_writable(base_path()),
+                'current' => file_exists(base_path('.env')) ? base_path('.env') : base_path(),
+                'group'  => 'permissions',
             ],
         ];
     }

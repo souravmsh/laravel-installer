@@ -2,7 +2,20 @@
 
 All notable changes to `souravmsh/laravel-installer` will be documented in this file.
 
-## [1.4.0] - 2026-06-29
+## [1.2.5] - 2026-06-29
+
+### Fixed
+- **`CheckInstalled` middleware** — no longer force-redirects to the welcome page when the request is already targeting an installer route (`installer.*`). Previously this caused an infinite redirect loop and broke inter-step navigation.
+- **`fixPermissions` command** — PHP's `chmod()` silently fails when the process doesn't own the target file (e.g. files owned by root or a deploy user). Added a shell `exec("chmod ...")` fallback so permissions are actually applied. Failure message now prints the exact `sudo chmod` command to run manually.
+- **`.env` writable check** — replaced unreliable `app()->environmentFilePath()` with `base_path('.env')`. Falls back to checking the project root directory when `.env` doesn't yet exist (instead of calling `dirname()` on a cached path).
+- **`bootstrap/cache` writable check** — added as a new permission requirement alongside `storage/` and `.env`.
+
+### Added
+- **Permissions section on welcome page** — the System Requirements checklist is now split into two labelled card sections:
+  - **System Requirements** — PHP version and required extensions.
+  - **File & Directory Permissions** — `storage/`, `bootstrap/cache/`, and `.env`, each showing the actual filesystem path and a `Writable` / `Not Writable` badge.
+
+## [1.2.4] - 2026-06-29
 
 ### Changed
 - **`laravel-installer:reset` command overhauled** — now runs three sequential steps:
@@ -11,8 +24,7 @@ All notable changes to `souravmsh/laravel-installer` will be documented in this 
   3. **Clear all caches**: Replaced individual `cache:clear` / `config:clear` / `route:clear` / `view:clear` calls with a single `optimize:clear`, which also flushes the compiled bootstrap cache (`bootstrap/cache/config.php`) — the root cause of the previous "not moving to setup mode" bug.
 - Added a final warning when `INSTALLER_ENABLED=false` is detected in `.env`, since removing the lock file alone cannot restore setup mode in that state.
 
-## [1.3.0] - 2026-06-29
-
+## [1.2.3] - 2026-06-29
 
 ### Added
 - Added `php artisan laravel-installer:reset` command to quickly clear application caches and remove the installation lock flag. Includes a confirmation warning to prevent accidental resets while safely keeping the license file intact.

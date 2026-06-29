@@ -1,3 +1,4 @@
+[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg?style=flat-square)](CHANGELOG.md)
 [![Software License](https://img.shields.io/badge/license-Proprietary-red.svg?style=flat-square)](LICENSE)
 
 A sleek, modern, and easy-to-use web-based installer for Laravel applications. This package provides a step-by-step wizard to help users set up your Laravel application, including environment configuration, database connection, and license validation.

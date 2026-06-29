@@ -82,13 +82,17 @@ class InstallerFreshCommand extends Command
 
     /**
      * Fix write permissions on files and directories the installer needs to write.
+     *
+     * PHP's chmod() only works when the PHP process owns the target file.
+     * When that fails, we fall back to a shell `chmod` so the fix actually lands
+     * (e.g. files owned by root or a different deploy user).
      */
     protected function fixPermissions(): void
     {
-        $envPath     = base_path('.env');
-        $storagePath = storage_path();
+        $envPath            = base_path('.env');
+        $storagePath        = storage_path();
         $bootstrapCachePath = base_path('bootstrap/cache');
-        $privateDir  = storage_path('app/private');
+        $privateDir         = storage_path('app/private');
 
         $targets = [
             ['path' => $envPath,            'isDir' => false, 'mode' => 0664, 'label' => '.env'],
@@ -112,17 +116,33 @@ class InstallerFreshCommand extends Command
                 continue;
             }
 
+            $modeStr = decoct($target['mode']);
+
             if ($target['isDir']) {
                 // chmod the directory itself and all its contents recursively
                 $result = $this->chmodRecursive($path, $target['mode']);
+
+                // Fallback: shell chmod -R for when PHP process doesn't own the files
+                if (!$result) {
+                    $escapedPath = escapeshellarg($path);
+                    exec("chmod -R {$modeStr} {$escapedPath} 2>&1", $output, $exitCode);
+                    $result = ($exitCode === 0);
+                }
             } else {
                 $result = @chmod($path, $target['mode']);
+
+                // Fallback: shell chmod for single file
+                if (!$result) {
+                    $escapedPath = escapeshellarg($path);
+                    exec("chmod {$modeStr} {$escapedPath} 2>&1", $output, $exitCode);
+                    $result = ($exitCode === 0);
+                }
             }
 
             if ($result) {
-                $this->info("  ✓ chmod " . decoct($target['mode']) . " : {$target['label']}");
+                $this->info("  ✓ chmod {$modeStr} : {$target['label']}");
             } else {
-                $this->warn("  ⚠ Failed   : {$target['label']} (check ownership — try running as root or www-data)");
+                $this->warn("  ⚠ Failed   : {$target['label']} (permission denied — try: sudo chmod -R {$modeStr} {$path})");
             }
         }
     }

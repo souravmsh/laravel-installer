@@ -23,6 +23,11 @@ class CheckInstalled
         $installLockFile = storage_path(config('laravel_installer.installed_key_path', 'app/private/key.install'));
 
         if (!File::exists($installLockFile)) {
+            // Avoid redirect loop: if already on an installer route, let the request through.
+            if ($request->routeIs('installer.*')) {
+                return $next($request);
+            }
+
             return redirect()->route('installer.welcome');
         }
 
