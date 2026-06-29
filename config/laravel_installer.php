@@ -12,6 +12,8 @@ return [
     |
     */
     'app_name' => env('APP_NAME', 'Laravel Application'),
+    
+    'app_version' => '1.2.6',
 
     'installer_enabled' => env('INSTALLER_ENABLED', true),
 
