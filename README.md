@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.2.5-blue.svg?style=flat-square)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.2.6-blue.svg?style=flat-square)](CHANGELOG.md)
 [![Software License](https://img.shields.io/badge/license-Proprietary-red.svg?style=flat-square)](LICENSE)
 
 A sleek, modern, and easy-to-use web-based installer for Laravel applications. This package provides a step-by-step wizard to help users set up your Laravel application, including environment configuration, database connection, and license validation.
@@ -63,8 +63,11 @@ The configuration file is located at `config/laravel_installer.php`. You can cus
 return [
     'app_name' => env('APP_NAME', 'Laravel Application'),
 
-    // Enable or disable the installer
+    // Enable or disable the installer entirely
     'installer_enabled' => env('INSTALLER_ENABLED', true),
+
+    // Force redirection to the installer when the app is uninstalled
+    'force_install_redirect' => env('INSTALLER_FORCE_REDIRECT', true),
 
     // Path to the installation lock file
     'installed_key_path' => env('INSTALLER_KEY_PATH', 'app/private/key.install'),
@@ -90,6 +93,14 @@ Once installed, navigate to `/install` to begin the installation process. The in
 7.  Installation Completion
 
 ### Commands
+
+#### Install Package
+
+Use this command to install the package and publish its configuration file to your host application. Note: The configuration is also automatically copied when the package is required via Composer (Zero-Touch publish).
+
+```bash
+php artisan laravel-installer:install
+```
 
 #### Reset / Fresh Install
 

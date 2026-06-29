@@ -1,50 +1,74 @@
 @extends('installer::layout')
 
-@section('title', 'Setup Complete')
-@section('subtitle', 'Your application is ready to use.')
+@section('title', 'All Done!')
+@section('subtitle', 'Your application is installed and ready to use.')
 
 @section('content')
 
-<div class="text-center py-4 mb-4">
-    <div class="d-inline-flex justify-content-center align-items-center bg-success text-white rounded-circle mb-3 shadow-sm" style="width: 70px; height: 70px;">
-        <i class="bi bi-rocket-takeoff" style="font-size: 32px;"></i>
+<div style="text-align:center;padding:.75rem 0 1rem">
+    <div class="complete-icon success" style="margin-bottom:.85rem">
+        <i class="bi bi-rocket-takeoff-fill"></i>
     </div>
-    <h3 class="fw-bold text-dark">You're All Set!</h3>
-    <p class="text-muted mx-auto" style="max-width: 400px;">
-        {{ config('laravel_installer.app_name', 'System') }} has been installed and configured successfully. You may now log in to the administrator portal.
-    </p>
-</div>
-
-<div class="card bg-light border">
-    <div class="card-header bg-transparent border-bottom-0 pt-3 pb-0">
-        <h6 class="mb-0 fw-bold text-secondary text-uppercase small">
-            <i class="bi bi-person-badge me-1"></i> Admin Credentials
-        </h6>
+    <div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.3rem">
+        {{ config('laravel_installer.app_name', 'Application') }} is ready
     </div>
-    <div class="card-body">
-        <dl class="row mb-0">
-            <dt class="col-sm-4 text-muted fw-normal small">Email Address</dt>
-            <dd class="col-sm-8 fw-medium text-dark mb-2">{{ config('laravel_installer.admin_email', 'admin@admin.com') }}</dd>
-            <dt class="col-sm-4 text-muted fw-normal small">Password</dt>
-            <dd class="col-sm-8 fw-medium text-dark mb-0">{{ config('laravel_installer.admin_password', 'password') }}</dd>
-        </dl>
+    <div style="font-size:.74rem;color:var(--muted)">
+        Login with the credentials below and change your password immediately.
     </div>
 </div>
 
-<div class="alert alert-warning border border-warning border-opacity-25 mt-4 d-flex" role="alert">
-    <i class="bi bi-shield-exclamation fs-5 me-3 text-warning"></i>
-    <div class="small text-dark">
-        <strong>Security Warning:</strong> Please copy these credentials now and change your password immediately upon first login.
+<div style="margin-bottom:.5rem">
+    <div style="font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:.5rem;display:flex;align-items:center;gap:.3rem">
+        <i class="bi bi-person-badge-fill"></i> Admin Credentials
     </div>
+
+    <div class="cred-row">
+        <div>
+            <div class="cred-label">Email</div>
+            <div class="cred-value" id="credEmail">{{ config('laravel_installer.admin_email', 'admin@admin.com') }}</div>
+        </div>
+        <button class="copy-btn" onclick="copyText('credEmail', this)" title="Copy">
+            <i class="bi bi-clipboard"></i>
+        </button>
+    </div>
+
+    <div class="cred-row">
+        <div>
+            <div class="cred-label">Password</div>
+            <div class="cred-value" id="credPass">{{ config('laravel_installer.admin_password', 'password') }}</div>
+        </div>
+        <button class="copy-btn" onclick="copyText('credPass', this)" title="Copy">
+            <i class="bi bi-clipboard"></i>
+        </button>
+    </div>
+</div>
+
+<div class="installer-alert warning" style="margin-top:.75rem">
+    <i class="bi bi-shield-exclamation"></i>
+    <div><strong>Security:</strong> Change your password on first login.</div>
 </div>
 
 @endsection
 
 @section('footer')
-    <div class="w-100 d-flex justify-content-end align-items-center">
-        <a href="{{ url('/') }}" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
-            <span>Go to Application</span>
-            <i class="bi bi-arrow-right"></i>
-        </a>
-    </div>
+    <span></span>
+    <a href="{{ url('/') }}" class="btn-primary-custom">
+        Go to Application <i class="bi bi-arrow-right"></i>
+    </a>
 @endsection
+
+@push('scripts')
+<script>
+function copyText(id, btn) {
+    const text = document.getElementById(id).textContent.trim();
+    navigator.clipboard.writeText(text).then(() => {
+        btn.innerHTML = '<i class="bi bi-clipboard-check"></i>';
+        btn.style.color = 'var(--accent)';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="bi bi-clipboard"></i>';
+            btn.style.color = '';
+        }, 1800);
+    });
+}
+</script>
+@endpush

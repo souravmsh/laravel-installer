@@ -1,190 +1,160 @@
 @extends('installer::layout')
 
-@section('title', 'Database Configuration')
-@section('subtitle', 'Enter your database connection parameters.')
+@section('title', 'Database')
+@section('subtitle', 'Enter your database connection details.')
 
 @section('content')
 
 @if($errors->any())
-    <div class="alert alert-danger d-flex align-items-start mb-4" role="alert">
-        <i class="bi bi-x-circle-fill fs-5 me-3 mt-1"></i>
-        <div>
-            <h6 class="alert-heading fw-bold mb-1">There were errors with your submission</h6>
-            <ul class="mb-0 small ps-3 text-danger">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+<div class="installer-alert danger" style="margin-bottom:.9rem;margin-top:0">
+    <i class="bi bi-x-circle-fill"></i>
+    <div>
+        <strong>Fix the following errors:</strong>
+        <ul style="margin:.3rem 0 0;padding-left:1.1rem">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
     </div>
+</div>
 @endif
 
 <form action="{{ route('installer.database.save') }}" method="POST" id="databaseForm">
     @csrf
-    
-    <div class="row g-3">
-        <div class="col-md-8">
-            <label for="host" class="form-label fw-medium small text-secondary">Database Host</label>
+
+    <div style="display:grid;grid-template-columns:1fr auto;gap:.6rem;margin-bottom:.6rem">
+        <div>
+            <label class="form-label" for="host">Host</label>
             <input type="text" name="host" id="host" class="form-control" value="{{ old('host', '127.0.0.1') }}" required>
         </div>
-
-        <div class="col-md-4">
-            <label for="port" class="form-label fw-medium small text-secondary">Port</label>
+        <div style="width:90px">
+            <label class="form-label" for="port">Port</label>
             <input type="number" name="port" id="port" class="form-control" value="{{ old('port', '3306') }}" required>
         </div>
+    </div>
 
-        <div class="col-12">
-            <label for="database" class="form-label fw-medium small text-secondary">Database Name</label>
-            <input type="text" name="database" id="database" class="form-control" value="{{ old('database') }}" required placeholder="laravel_app">
-        </div>
+    <div style="margin-bottom:.6rem">
+        <label class="form-label" for="database">Database Name</label>
+        <input type="text" name="database" id="database" class="form-control" value="{{ old('database') }}" required placeholder="my_database">
+    </div>
 
-        <div class="col-md-6">
-            <label for="username" class="form-label fw-medium small text-secondary">Username</label>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:.9rem">
+        <div>
+            <label class="form-label" for="username">Username</label>
             <input type="text" name="username" id="username" class="form-control" value="{{ old('username') }}" required>
         </div>
-
-        <div class="col-md-6">
-            <label for="password" class="form-label fw-medium small text-secondary">Password</label>
-            <input type="password" name="password" id="password" class="form-control" value="{{ old('password') }}">
-        </div>
-
-        <div class="col-12 mt-4">
-            <div class="form-check p-3 border rounded bg-light">
-                <input class="form-check-input ms-0" type="checkbox" name="confirm_wipe" value="1" id="confirmWipe" required>
-                <label class="form-check-label ms-2 fw-medium text-dark" for="confirmWipe">
-                    I understand that this will wipe the database and run migrations/seeders.
-                </label>
-                <div class="form-text mt-1 ms-2">This will clear any existing data in the specified database.</div>
+        <div>
+            <label class="form-label" for="password">Password</label>
+            <div style="position:relative">
+                <input type="password" name="password" id="password" class="form-control" value="{{ old('password') }}" style="padding-right:2.2rem">
+                <button type="button" id="togglePwd" style="position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:.85rem;padding:0">
+                    <i class="bi bi-eye" id="eyeIcon"></i>
+                </button>
             </div>
         </div>
     </div>
+
+    <label class="custom-check" for="confirmWipe">
+        <input type="checkbox" name="confirm_wipe" value="1" id="confirmWipe" required>
+        <div>
+            <div class="custom-check-text">I understand this will wipe the database and run migrations/seeders</div>
+            <div class="custom-check-hint">Existing data will be removed from the specified database.</div>
+        </div>
+    </label>
 </form>
 
-<div id="testResult" class="mt-4"></div>
+<div id="testResult" style="margin-top:.75rem"></div>
 
 @endsection
 
 @section('footer')
-    <div class="w-100 d-flex justify-content-between align-items-center">
-        <button type="button" class="btn btn-outline-secondary px-4 fw-medium d-flex align-items-center gap-2" id="testConnectionBtn">
-            <i class="bi bi-plug"></i>
-            <span>Test Connection</span>
-        </button>
-        
-        <button type="button" onclick="document.getElementById('databaseForm').submit();" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
-            <span>Next step</span>
-            <i class="bi bi-arrow-right"></i>
-        </button>
-    </div>
+    <button type="button" class="btn-ghost" id="testConnectionBtn">
+        <i class="bi bi-plug"></i> Test Connection
+    </button>
+    <button type="button" onclick="document.getElementById('databaseForm').submit()" class="btn-primary-custom">
+        Continue <i class="bi bi-arrow-right"></i>
+    </button>
 @endsection
 
 @push('scripts')
 <script>
-document.getElementById('testConnectionBtn').addEventListener('click', function() {
+// Toggle password visibility
+document.getElementById('togglePwd').addEventListener('click', function () {
+    const pwd = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (pwd.type === 'password') {
+        pwd.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+    } else {
+        pwd.type = 'password';
+        icon.className = 'bi bi-eye';
+    }
+});
+
+// Test connection
+document.getElementById('testConnectionBtn').addEventListener('click', function () {
     const btn = this;
-    const form = document.getElementById('databaseForm');
-    const formData = new FormData(form);
-    const resultDiv = document.getElementById('testResult');
-    
+    const formData = new FormData(document.getElementById('databaseForm'));
+    const result = document.getElementById('testResult');
+
     btn.disabled = true;
-    const originalText = btn.innerText;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Testing...';
-    
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" style="width:12px;height:12px;border-width:2px"></span> Testing…';
+
     fetch('{{ route('installer.database.test') }}', {
         method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
         body: formData
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
-            resultDiv.innerHTML = `
-                <div class="alert alert-success d-flex align-items-center mb-0" role="alert">
-                    <i class="bi bi-check-circle-fill fs-5 me-3"></i>
-                    <div class="small fw-medium">${data.message}</div>
-                </div>
-            `;
+            result.innerHTML = `<div class="installer-alert success" style="margin-top:0"><i class="bi bi-check-circle-fill"></i><div>${data.message}</div></div>`;
+        } else if (data.missing_database) {
+            result.innerHTML = `
+                <div class="installer-alert warning" style="margin-top:0">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>
+                        <div style="margin-bottom:.4rem">${data.message}</div>
+                        <button type="button" id="createDbBtn" class="btn-primary-custom" style="font-size:.72rem;padding:.3rem .8rem">
+                            <i class="bi bi-plus-circle"></i> Create Database
+                        </button>
+                    </div>
+                </div>`;
+            document.getElementById('createDbBtn').addEventListener('click', () => createDatabase(formData));
         } else {
-            if (data.missing_database) {
-                resultDiv.innerHTML = `
-                    <div class="alert alert-warning d-flex align-items-start mb-0" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill fs-5 me-3 mt-1"></i>
-                        <div class="w-100">
-                            <h6 class="alert-heading fw-bold mb-1">Database Not Found</h6>
-                            <p class="mb-3 small">${data.message}</p>
-                            <button type="button" id="createDatabaseBtn" class="btn btn-sm btn-warning fw-medium px-3">Create Database</button>
-                        </div>
-                    </div>
-                `;
-                document.getElementById('createDatabaseBtn').addEventListener('click', function() {
-                    createDatabase(formData);
-                });
-            } else {
-                resultDiv.innerHTML = `
-                    <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
-                        <i class="bi bi-x-circle-fill fs-5 me-3"></i>
-                        <div class="small fw-medium">${data.message}</div>
-                    </div>
-                `;
-            }
+            result.innerHTML = `<div class="installer-alert danger" style="margin-top:0"><i class="bi bi-x-circle-fill"></i><div>${data.message}</div></div>`;
         }
     })
-    .catch(error => {
-        resultDiv.innerHTML = `
-            <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
-                <i class="bi bi-x-circle-fill fs-5 me-3"></i>
-                <div class="small fw-medium">Connection test failed entirely.</div>
-            </div>
-        `;
+    .catch(() => {
+        result.innerHTML = `<div class="installer-alert danger" style="margin-top:0"><i class="bi bi-x-circle-fill"></i><div>Connection test failed.</div></div>`;
     })
     .finally(() => {
         btn.disabled = false;
-        btn.innerHTML = originalText;
+        btn.innerHTML = '<i class="bi bi-plug"></i> Test Connection';
     });
 });
 
 function createDatabase(formData) {
-    const resultDiv = document.getElementById('testResult');
-    const createBtn = document.getElementById('createDatabaseBtn');
-    
+    const createBtn = document.getElementById('createDbBtn');
+    const result    = document.getElementById('testResult');
     createBtn.disabled = true;
-    createBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span> Creating...';
-    
+    createBtn.innerHTML = '<span class="spinner-border spinner-border-sm" style="width:11px;height:11px;border-width:2px"></span> Creating…';
+
     fetch('{{ route('installer.database.create') }}', {
         method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        },
+        headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
         body: formData
     })
-    .then(response => response.json())
+    .then(r => r.json())
     .then(data => {
         if (data.success) {
-            resultDiv.innerHTML = `
-                <div class="alert alert-success d-flex align-items-center mb-0" role="alert">
-                    <i class="bi bi-check-circle-fill fs-5 me-3"></i>
-                    <div class="small fw-medium">${data.message}</div>
-                </div>
-            `;
-            setTimeout(() => { document.getElementById('testConnectionBtn').click(); }, 500);
+            result.innerHTML = `<div class="installer-alert success" style="margin-top:0"><i class="bi bi-check-circle-fill"></i><div>${data.message}</div></div>`;
         } else {
-            resultDiv.innerHTML = `
-                <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
-                    <i class="bi bi-x-circle-fill fs-5 me-3"></i>
-                    <div class="small fw-medium">${data.message}</div>
-                </div>
-            `;
+            result.innerHTML = `<div class="installer-alert danger" style="margin-top:0"><i class="bi bi-x-circle-fill"></i><div>${data.message}</div></div>`;
         }
     })
-    .catch(error => {
-        resultDiv.innerHTML = `
-            <div class="alert alert-danger d-flex align-items-center mb-0" role="alert">
-                <i class="bi bi-x-circle-fill fs-5 me-3"></i>
-                <div class="small fw-medium">Database creation failed.</div>
-            </div>
-        `;
+    .catch(() => {
+        result.innerHTML = `<div class="installer-alert danger" style="margin-top:0"><i class="bi bi-x-circle-fill"></i><div>Database creation failed.</div></div>`;
     });
 }
 </script>

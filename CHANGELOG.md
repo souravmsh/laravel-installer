@@ -2,6 +2,17 @@
 
 All notable changes to `souravmsh/laravel-installer` will be documented in this file.
 
+## [1.2.6] - 2026-06-29
+
+### Added
+- **`force_install_redirect` configuration** — new configuration key (controlled by `INSTALLER_FORCE_REDIRECT` env variable) to strictly block or allow browsing without an installation lock.
+- **Auto-publishing config** — zero-touch configuration publish; the config file automatically copies itself to the host application upon Composer install via Laravel's package discovery event.
+- **`laravel-installer:install` command** — a dedicated CLI command to manually install/publish the package configuration file.
+- **Glassmorphism UI Redesign** — completely overhauled the user interface with a sleek, compact, dark-sidebar design including animated step indicators, floating labels, real-time feedback, and a built-in dark terminal for installation logs, removing Bootstrap card/table overhead.
+
+### Fixed
+- **CSRF Token Mismatch on Database Setup** — fixed a bug where overriding the database configuration in middleware caused the session driver to mismatch between GET and POST requests, resulting in a 419 Page Expired error.
+
 ## [1.2.5] - 2026-06-29
 
 ### Fixed

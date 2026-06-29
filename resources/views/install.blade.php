@@ -1,186 +1,149 @@
 @extends('installer::layout')
 
-@section('title', 'Installation')
-@section('subtitle', 'Please wait while the installation completes.')
+@section('title', 'Installing')
+@section('subtitle', 'Running migrations and finalizing your setup.')
 
 @section('content')
 
-<div id="installProgress" class="py-4">
-    <div class="mb-4">
-        <div class="d-flex justify-content-between text-dark fw-medium small mb-2">
-            <span id="statusText">Migrating Database...</span>
-            <span id="progressPercent" class="fw-bold text-primary">0%</span>
-        </div>
-        
-        <div class="progress" style="height: 10px;">
-            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: 0%; transition: width .5s ease;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        
-        <p class="mt-2 text-muted small" id="statusDetail">Setting up tables...</p>
+{{-- Progress state --}}
+<div id="stateProgress">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.3rem">
+        <span id="statusText" style="font-size:.76rem;font-weight:600;color:var(--text)">Preparing…</span>
+        <span id="progressPct" style="font-size:.72rem;font-weight:700;color:var(--accent)">0%</span>
     </div>
+    <div class="progress-track">
+        <div class="progress-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div id="statusDetail" style="font-size:.68rem;color:var(--muted);margin-top:.2rem">Starting up…</div>
 
-    <div class="card bg-dark text-light border-0 mt-4">
-        <div class="card-body p-3 font-monospace small" id="consoleLog" style="height: 160px; overflow-y: auto;">
-            <div class="text-secondary">> Starting installation wizard...</div>
-        </div>
+    <div class="terminal" id="consoleLog" style="margin-top:.9rem">
+        <span class="t-dim">&gt;</span> <span class="t-info">Initializing installer…</span>
     </div>
 </div>
 
-<div id="installComplete" class="d-none py-5 text-center">
-    <div class="d-inline-flex justify-content-center align-items-center bg-success bg-opacity-10 rounded-circle mb-4" style="width: 80px; height: 80px;">
-        <i class="bi bi-check-lg text-success" style="font-size: 40px;"></i>
-    </div>
-    <h3 class="fw-bold mb-2 text-dark">Installation Successful</h3>
-    <p class="text-muted">The application database has been installed successfully.</p>
+{{-- Success state --}}
+<div id="stateSuccess" style="display:none;text-align:center;padding:1.5rem 0">
+    <div class="complete-icon success"><i class="bi bi-check-lg"></i></div>
+    <div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.3rem">Database Installed</div>
+    <div style="font-size:.76rem;color:var(--muted)">All migrations and seeders completed successfully.</div>
 </div>
 
-<div id="installError" class="d-none py-5 text-center">
-    <div class="d-inline-flex justify-content-center align-items-center bg-danger bg-opacity-10 rounded-circle mb-4" style="width: 80px; height: 80px;">
-        <i class="bi bi-x-lg text-danger" style="font-size: 40px;"></i>
-    </div>
-    <h3 class="fw-bold mb-3 text-dark">Installation Failed</h3>
-    <div id="errorMessage" class="alert alert-danger text-start mx-auto mb-0" style="max-width: 400px;">
-        An error occurred.
+{{-- Error state --}}
+<div id="stateError" style="display:none;text-align:center;padding:1.5rem 0">
+    <div class="complete-icon error"><i class="bi bi-x-lg"></i></div>
+    <div style="font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:.5rem">Installation Failed</div>
+    <div id="errorMessage" class="installer-alert danger" style="text-align:left;display:inline-flex;max-width:380px">
+        <i class="bi bi-x-circle-fill"></i><div>An error occurred.</div>
     </div>
 </div>
 
 @endsection
 
 @section('footer')
-    <div id="footerInstall" class="w-100 d-flex justify-content-between align-items-center">
-        <button type="button" disabled class="btn btn-outline-secondary opacity-0 pe-none">
-            <i class="bi bi-arrow-left me-1"></i> Back
-        </button>
-        <button type="button" disabled id="installNextBtn" class="btn btn-primary px-4 d-flex align-items-center gap-2">
-            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            <span>Installing...</span>
+    {{-- During install --}}
+    <div id="footerInstall" style="width:100%;display:flex;justify-content:flex-end">
+        <button disabled class="btn-primary-custom" style="opacity:.5;cursor:not-allowed">
+            <span class="spinner-border spinner-border-sm" style="width:11px;height:11px;border-width:2px"></span>
+            Installing…
         </button>
     </div>
-    
-    <div id="footerComplete" class="w-100 d-none justify-content-end align-items-center">
-        <a href="{{ route('installer.complete') }}" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
-            <span>Finish</span>
-            <i class="bi bi-arrow-right"></i>
+
+    {{-- After success --}}
+    <div id="footerSuccess" style="width:100%;display:none;justify-content:flex-end">
+        <a href="{{ route('installer.complete') }}" class="btn-primary-custom">
+            Finish <i class="bi bi-arrow-right"></i>
         </a>
     </div>
 
-    <div id="footerError" class="w-100 d-none justify-content-between align-items-center">
-        <a href="{{ route('installer.database') }}" class="btn btn-outline-secondary px-4 d-flex align-items-center gap-2">
-            <i class="bi bi-arrow-left"></i>
-            <span>Back to Database</span>
+    {{-- After error --}}
+    <div id="footerError" style="width:100%;display:none;justify-content:space-between;align-items:center">
+        <a href="{{ route('installer.database') }}" class="btn-ghost">
+            <i class="bi bi-arrow-left"></i> Back
         </a>
-        <button type="button" disabled class="btn btn-primary px-4 opacity-50 pe-none">
-            <span>Next step</span>
-            <i class="bi bi-chevron-right ms-1 small"></i>
-        </button>
+        <button disabled class="btn-primary-custom" style="opacity:.4;cursor:not-allowed">Continue</button>
     </div>
 @endsection
 
 @push('scripts')
 <script>
-window.addEventListener('load', function() {
-    const progressBar = document.getElementById('progressBar');
+window.addEventListener('load', function () {
+    const bar        = document.getElementById('progressBar');
+    const pct        = document.getElementById('progressPct');
     const statusText = document.getElementById('statusText');
-    const statusDetail = document.getElementById('statusDetail');
-    const progressPercent = document.getElementById('progressPercent');
-    const consoleLog = document.getElementById('consoleLog');
-    
-    const installProgress = document.getElementById('installProgress');
-    const installComplete = document.getElementById('installComplete');
-    const installError = document.getElementById('installError');
-    const errorMessage = document.getElementById('errorMessage');
+    const statusDet  = document.getElementById('statusDetail');
+    const log        = document.getElementById('consoleLog');
 
-    const footerInstall = document.getElementById('footerInstall');
-    const footerComplete = document.getElementById('footerComplete');
-    const footerError = document.getElementById('footerError');
-
-    function logToConsole(message) {
-        const div = document.createElement('div');
-        div.className = 'text-success mb-1';
-        div.innerHTML = '<span class="text-secondary">></span> ' + message;
-        consoleLog.appendChild(div);
-        consoleLog.scrollTop = consoleLog.scrollHeight;
+    function addLog(msg, cls = 't-ok') {
+        log.innerHTML += `\n<div><span class="t-dim">&gt;</span> <span class="${cls}">${msg}</span></div>`;
+        log.scrollTop = log.scrollHeight;
     }
 
-    let progress = 0;
-    const steps = [
-        { text: 'Finalizing Configuration', detail: 'Setting up details...', progress: 50, log: 'Saving configuration...' },
-        { text: 'Saving License Data', detail: 'Storing license information...', progress: 85, log: 'Writing to database...' },
+    function setProgress(p, text, detail) {
+        bar.style.width = p + '%';
+        pct.textContent = p + '%';
+        statusText.textContent = text;
+        statusDet.textContent  = detail;
+    }
+
+    function showState(state) {
+        ['Progress', 'Success', 'Error'].forEach(s => {
+            document.getElementById('state' + s).style.display = 'none';
+            document.getElementById('footer' + (s === 'Progress' ? 'Install' : s)).style.display = 'none';
+        });
+        document.getElementById('state'  + state).style.display = state === 'Success' || state === 'Error' ? 'block' : 'block';
+        const fKey = state === 'Progress' ? 'footerInstall' : ('footer' + state);
+        document.getElementById(fKey).style.display = 'flex';
+    }
+
+    const preSteps = [
+        { p: 20, text: 'Finalizing configuration', detail: 'Saving .env settings…', log: ['Merging configuration…', 't-info'] },
+        { p: 45, text: 'Preparing database',       detail: 'Connecting to server…',  log: ['Connected to database.', 't-ok'] },
     ];
 
-    let currentStep = 0;
-
-    function updateProgress() {
-        if (currentStep < steps.length) {
-            const step = steps[currentStep];
-            statusText.textContent = step.text;
-            statusDetail.textContent = step.detail;
-            progressBar.style.width = step.progress + '%';
-            progressBar.setAttribute('aria-valuenow', step.progress);
-            progressPercent.textContent = step.progress + '%';
-            logToConsole(step.log);
-            
-            currentStep++;
-            setTimeout(updateProgress, 1200);
-        } else {
-            runInstallation();
-        }
+    let idx = 0;
+    function runPreStep() {
+        if (idx >= preSteps.length) { runInstall(); return; }
+        const s = preSteps[idx++];
+        setProgress(s.p, s.text, s.detail);
+        addLog(s.log[0], s.log[1]);
+        setTimeout(runPreStep, 1100);
     }
 
-    function runInstallation() {
-        logToConsole('Finalizing installation process...');
+    function runInstall() {
+        setProgress(70, 'Running migrations', 'Setting up database tables…');
+        addLog('Running: php artisan migrate --force', 't-info');
+
         fetch('{{ route('installer.install.process') }}', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                 'Content-Type': 'application/json',
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                progressBar.classList.remove('progress-bar-animated');
-                progressBar.classList.add('bg-success');
-                progressBar.style.width = '100%';
-                progressPercent.textContent = '100%';
-                logToConsole('Installation completed successfully.');
-                
-                setTimeout(() => {
-                    installProgress.classList.add('d-none');
-                    installComplete.classList.remove('d-none');
-                    
-                    footerInstall.classList.add('d-none');
-                    footerInstall.classList.remove('d-flex');
-                    
-                    footerComplete.classList.remove('d-none');
-                    footerComplete.classList.add('d-flex');
-                }, 800);
-            } else {
-                installProgress.classList.add('d-none');
-                errorMessage.textContent = data.message;
-                installError.classList.remove('d-none');
-                
-                footerInstall.classList.add('d-none');
-                footerInstall.classList.remove('d-flex');
-                
-                footerError.classList.remove('d-none');
-                footerError.classList.add('d-flex');
             }
         })
-        .catch(error => {
-            installProgress.classList.add('d-none');
-            errorMessage.textContent = 'An expected error occurred during setup.';
-            installError.classList.remove('d-none');
-            
-            footerInstall.classList.add('d-none');
-            footerInstall.classList.remove('d-flex');
-            
-            footerError.classList.remove('d-none');
-            footerError.classList.add('d-flex');
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                setProgress(100, 'Complete', 'Installation finished.');
+                addLog('Migrations completed.', 't-ok');
+                addLog('Seeders executed.', 't-ok');
+                addLog('Installation lock created.', 't-ok');
+                setTimeout(() => showState('Success'), 700);
+            } else {
+                addLog(data.message || 'Unknown error.', 't-err');
+                document.getElementById('errorMessage').innerHTML =
+                    `<i class="bi bi-x-circle-fill"></i><div>${data.message}</div>`;
+                setTimeout(() => showState('Error'), 400);
+            }
+        })
+        .catch(() => {
+            addLog('Unexpected error during installation.', 't-err');
+            document.getElementById('errorMessage').innerHTML =
+                `<i class="bi bi-x-circle-fill"></i><div>Unexpected error. Check server logs.</div>`;
+            setTimeout(() => showState('Error'), 400);
         });
     }
 
-    setTimeout(updateProgress, 1000);
+    setTimeout(runPreStep, 600);
 });
 </script>
 @endpush

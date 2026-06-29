@@ -1,42 +1,43 @@
 @extends('installer::layout')
 
-@section('title', 'License Verification')
-@section('subtitle', 'Please provide your purchase details.')
+@section('title', 'License')
+@section('subtitle', 'Enter your purchase details to activate the software.')
 
 @section('content')
 
 @if($errors->any())
-    <div class="alert alert-danger d-flex align-items-start mb-4" role="alert">
-        <i class="bi bi-x-circle-fill fs-5 me-3 mt-1"></i>
-        <div>
-            <h6 class="alert-heading fw-bold mb-1">There were errors with your submission</h6>
-            <ul class="mb-0 small ps-3 text-danger">
-                @foreach($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
+<div class="installer-alert danger" style="margin-bottom:.9rem;margin-top:0">
+    <i class="bi bi-x-circle-fill"></i>
+    <div>
+        @foreach($errors->all() as $error)
+            <div>{{ $error }}</div>
+        @endforeach
     </div>
+</div>
 @endif
 
 <form action="{{ route('installer.license.save') }}" method="POST" id="licenseForm">
     @csrf
-    
-    <div class="row g-4">
-        <div class="col-12">
-            <label for="name" class="form-label fw-medium small text-secondary">Full Name</label>
-            <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required placeholder="John Doe">
-        </div>
 
-        <div class="col-12">
-            <label for="email" class="form-label fw-medium small text-secondary">Email Address</label>
-            <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required placeholder="email@example.com">
-        </div>
+    <div style="margin-bottom:.6rem">
+        <label class="form-label" for="name">Full Name</label>
+        <input type="text" name="name" id="name" class="form-control" value="{{ old('name') }}" required placeholder="John Doe">
+    </div>
 
-        <div class="col-12">
-            <label for="license_key" class="form-label fw-medium small text-secondary">License Key</label>
-            <input type="text" name="license_key" id="license_key" class="form-control font-monospace" value="{{ old('license_key') }}" required placeholder="XXXX-XXXX-XXXX-XXXX">
-            <div class="form-text mt-2"><i class="bi bi-shield-check me-1 text-success"></i> Your license key will be securely validated against our servers.</div>
+    <div style="margin-bottom:.6rem">
+        <label class="form-label" for="email">Email Address</label>
+        <input type="email" name="email" id="email" class="form-control" value="{{ old('email') }}" required placeholder="you@example.com">
+    </div>
+
+    <div style="margin-bottom:.5rem">
+        <label class="form-label" for="license_key">License Key</label>
+        <input type="text" name="license_key" id="license_key" class="form-control"
+               style="font-family:monospace;letter-spacing:.05em;text-transform:uppercase"
+               value="{{ old('license_key') }}" required placeholder="XXXX-XXXX-XXXX-XXXX"
+               oninput="this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,'').replace(/(.{4})(?=.)/g,'$1-').substring(0,19)">
+        <div class="form-text" style="margin-top:.3rem">
+            <i class="bi bi-shield-check" style="color:#059669"></i>
+            Validated securely against the licensing server.
         </div>
     </div>
 </form>
@@ -44,23 +45,15 @@
 @endsection
 
 @section('footer')
-    <div class="w-100 d-flex justify-content-between align-items-center">
-        <a href="{{ route('installer.database') }}" class="btn btn-outline-secondary px-4 fw-medium d-flex align-items-center gap-2">
-            <i class="bi bi-arrow-left"></i>
-            <span>Back</span>
-        </a>
-        
-        <div class="d-flex align-items-center gap-3">
-            @if(config('laravel_installer.license_check', 'required') === 'optional')
-                <a href="{{ route('installer.install') }}" class="text-secondary text-decoration-none small fw-medium me-2 px-2 py-1 rounded hover-bg-light">
-                    Skip for Now
-                </a>
-            @endif
-            
-            <button type="button" onclick="document.getElementById('licenseForm').submit();" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
-                <span>Verify & Next</span>
-                <i class="bi bi-arrow-right"></i>
-            </button>
-        </div>
+    <a href="{{ route('installer.database') }}" class="btn-ghost">
+        <i class="bi bi-arrow-left"></i> Back
+    </a>
+    <div style="display:flex;align-items:center;gap:.6rem">
+        @if(config('laravel_installer.license_check', 'required') === 'optional')
+            <a href="{{ route('installer.install') }}" style="font-size:.73rem;color:var(--muted);text-decoration:none">Skip</a>
+        @endif
+        <button type="button" onclick="document.getElementById('licenseForm').submit()" class="btn-primary-custom">
+            Verify & Continue <i class="bi bi-arrow-right"></i>
+        </button>
     </div>
 @endsection

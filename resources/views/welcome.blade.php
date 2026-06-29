@@ -1,104 +1,68 @@
 @extends('installer::layout')
 
 @section('title', 'System Requirements')
-@section('subtitle', 'Please ensure your server meets the following requirements before proceeding.')
+@section('subtitle', 'Verify your server meets all requirements before continuing.')
 
 @section('content')
 
 @php
-    $byGroup = collect($requirements)->groupBy(fn($r) => $r['group'] ?? 'requirements');
-    $allPassed = collect($requirements)->every(fn($req) => $req['status']);
+    $byGroup  = collect($requirements)->groupBy(fn($r) => $r['group'] ?? 'requirements');
+    $allPassed = collect($requirements)->every(fn($r) => $r['status']);
 @endphp
 
-{{-- ── System Requirements ─────────────────────────────────────────────── --}}
-<div class="card border mb-3">
-    <div class="card-header bg-light py-2 px-3">
-        <span class="fw-semibold text-secondary small text-uppercase">
-            <i class="bi bi-cpu me-1"></i> System Requirements
-        </span>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col" class="text-secondary small text-uppercase">Requirement</th>
-                    <th scope="col" class="text-secondary small text-uppercase">Version</th>
-                    <th scope="col" class="text-end text-secondary small text-uppercase">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($byGroup->get('requirements', []) as $key => $requirement)
-                <tr>
-                    <td class="align-middle fw-medium">{{ $requirement['name'] }}</td>
-                    <td class="align-middle text-muted">{{ $requirement['current'] ?? 'N/A' }}</td>
-                    <td class="align-middle text-end">
-                        @if($requirement['status'])
-                            <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 border border-success border-opacity-25 rounded-pill">
-                                <i class="bi bi-check2 me-1"></i> Passed
-                            </span>
-                        @else
-                            <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1 border border-danger border-opacity-25 rounded-pill">
-                                <i class="bi bi-x-lg me-1"></i> Failed
-                            </span>
-                        @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
+<table class="check-table">
+    <thead>
+        <tr>
+            <th>Requirement</th>
+            <th>Current</th>
+            <th style="text-align:right">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{-- Requirements --}}
+        <tr><td colspan="3" style="padding:0">
+            <div class="group-heading"><i class="bi bi-cpu-fill"></i> System</div>
+        </td></tr>
+        @foreach($byGroup->get('requirements', []) as $req)
+        <tr>
+            <td class="fw-medium">{{ $req['name'] }}</td>
+            <td style="color:var(--muted);font-size:.72rem;font-family:monospace">{{ $req['current'] ?? '—' }}</td>
+            <td style="text-align:right">
+                @if($req['status'])
+                    <span class="pill pill-ok"><i class="bi bi-check2"></i> OK</span>
+                @else
+                    <span class="pill pill-bad"><i class="bi bi-x"></i> Failed</span>
+                @endif
+            </td>
+        </tr>
+        @endforeach
 
-{{-- ── Permissions ──────────────────────────────────────────────────────── --}}
-<div class="card border">
-    <div class="card-header bg-light py-2 px-3">
-        <span class="fw-semibold text-secondary small text-uppercase">
-            <i class="bi bi-shield-lock me-1"></i> File &amp; Directory Permissions
-        </span>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-hover mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th scope="col" class="text-secondary small text-uppercase">Path</th>
-                    <th scope="col" class="text-secondary small text-uppercase">Location</th>
-                    <th scope="col" class="text-end text-secondary small text-uppercase">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($byGroup->get('permissions', []) as $key => $requirement)
-                <tr>
-                    <td class="align-middle fw-medium">{{ $requirement['name'] }}</td>
-                    <td class="align-middle text-muted" style="font-size: .8rem; word-break: break-all;">
-                        {{ $requirement['current'] ?? 'N/A' }}
-                    </td>
-                    <td class="align-middle text-end">
-                        @if($requirement['status'])
-                            <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 border border-success border-opacity-25 rounded-pill">
-                                <i class="bi bi-check2 me-1"></i> Writable
-                            </span>
-                        @else
-                            <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1 border border-danger border-opacity-25 rounded-pill">
-                                <i class="bi bi-x-lg me-1"></i> Not Writable
-                            </span>
-                        @endif
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div>
+        {{-- Permissions --}}
+        <tr><td colspan="3" style="padding:0">
+            <div class="group-heading" style="border-top:1px solid #f3f4f6;margin-top:.2rem"><i class="bi bi-shield-lock-fill"></i> Permissions</div>
+        </td></tr>
+        @foreach($byGroup->get('permissions', []) as $req)
+        <tr>
+            <td class="fw-medium">{{ $req['name'] }}</td>
+            <td style="color:var(--muted);font-size:.67rem;word-break:break-all;font-family:monospace">{{ $req['current'] ?? '—' }}</td>
+            <td style="text-align:right">
+                @if($req['status'])
+                    <span class="pill pill-ok"><i class="bi bi-check2"></i> Writable</span>
+                @else
+                    <span class="pill pill-bad"><i class="bi bi-x"></i> Blocked</span>
+                @endif
+            </td>
+        </tr>
+        @endforeach
+    </tbody>
+</table>
 
 @if(!$allPassed)
-<div class="alert alert-danger d-flex align-items-start mt-4 mb-0" role="alert">
-    <i class="bi bi-exclamation-triangle-fill fs-5 me-3 mt-1"></i>
+<div class="installer-alert danger">
+    <i class="bi bi-exclamation-triangle-fill"></i>
     <div>
-        <h6 class="alert-heading fw-bold mb-1">Cannot Proceed</h6>
-        <p class="mb-0 small">Please resolve the failed requirements or permission issues listed above before continuing with the installation.</p>
-        <p class="mb-0 small mt-1 text-muted">
-            Run <code>php artisan laravel-installer:reset</code> to attempt an automatic permission fix.
-        </p>
+        <strong>Cannot proceed.</strong> Resolve the failed checks above.
+        set permissions to 777 for the failed files and directories.
     </div>
 </div>
 @endif
@@ -106,17 +70,14 @@
 @endsection
 
 @section('footer')
-    <div class="w-100 d-flex justify-content-end align-items-center">
-        @if($allPassed)
-            <a href="{{ route('installer.database') }}" class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 shadow-sm">
-                <span>Next step</span>
-                <i class="bi bi-arrow-right"></i>
-            </a>
-        @else
-            <button disabled class="btn btn-primary px-5 py-2 fw-semibold d-flex align-items-center gap-2 opacity-50 pe-none">
-                <span>Next step</span>
-                <i class="bi bi-arrow-right"></i>
-            </button>
-        @endif
-    </div>
+    <span></span>
+    @if($allPassed)
+        <a href="{{ route('installer.database') }}" class="btn-primary-custom">
+            Continue <i class="bi bi-arrow-right"></i>
+        </a>
+    @else
+        <button disabled class="btn-primary-custom">
+            Continue <i class="bi bi-arrow-right"></i>
+        </button>
+    @endif
 @endsection
